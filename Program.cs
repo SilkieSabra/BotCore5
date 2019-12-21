@@ -796,10 +796,7 @@ namespace Bot
         public void CalculateKey(string K)
         {
             string valid = "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ=.+/\\";
-            while(valid.Length < K.Length)
-            {
-                valid += valid;
-            }
+
             StringBuilder tmp = new StringBuilder(_key);
 
             for (int i = 0; i < _key.Length; i++)
@@ -810,6 +807,12 @@ namespace Bot
                     MD5 MDHash = MD5.Create();
                     for (int ii = 0; ii < K.Length; ii++)
                     {
+                        int ixi = ii;
+                        while(ixi > valid.Length)
+                        {
+                            ixi = ixi / 2;
+                        }
+                        if (ixi < 0) ixi = new Random().Next(0, valid.Length - 1);
                         byte[] md5Data = MDHash.ComputeHash(Encoding.UTF8.GetBytes((K + i.ToString() + valid[i].ToString() + valid[ii].ToString()).ToCharArray()));
                         // Replace digit with MD5'd  char from String K encoded alongside (i)
                         StringBuilder hashData = new StringBuilder();
@@ -819,10 +822,11 @@ namespace Bot
                         }
                         string Hash = hashData.ToString();
                         tmp[i] = Hash[(i > 31 ? 1 : i)];
+                        Console.Write("\r" + tmp.ToString() + "\r");
                     }
                 }
             }
-
+            Console.WriteLine("\r\n");
             _key = tmp.ToString();
         }
 
