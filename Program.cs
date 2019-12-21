@@ -813,7 +813,7 @@ namespace Bot
                             ixi = ixi / 2;
                         }
                         if (ixi < 0) ixi = valid[1];
-                        byte[] md5Data = MDHash.ComputeHash(Encoding.UTF8.GetBytes((K + i.ToString() + valid[i].ToString() + valid[ii].ToString()).ToCharArray()));
+                        byte[] md5Data = MDHash.ComputeHash(Encoding.UTF8.GetBytes((K + i.ToString() + valid[i].ToString() + valid[ixi].ToString()).ToCharArray()));
                         // Replace digit with MD5'd  char from String K encoded alongside (i)
                         StringBuilder hashData = new StringBuilder();
                         foreach (byte b in md5Data)
