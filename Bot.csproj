@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,23 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="libremetaverse\**" />
+    <EmbeddedResource Remove="libremetaverse\**" />
+    <None Remove="libremetaverse\**" />
+  </ItemGroup>
+
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.Threading.Channels" Version="4.7.0" />
   </ItemGroup>
 
+
   <ItemGroup>
-    <Reference Include="LibreMetaverse">
-      <HintPath>..\..\libremetaverse\bin\netcoreapp3.0\LibreMetaverse.dll</HintPath>
-    </Reference>
-    <Reference Include="LibreMetaverse.StructuredData">
-      <HintPath>..\..\libremetaverse\bin\netcoreapp3.0\LibreMetaverse.StructuredData.dll</HintPath>
-    </Reference>
-    <Reference Include="LibreMetaverse.Types">
-      <HintPath>..\..\libremetaverse\bin\netcoreapp3.0\LibreMetaverse.Types.dll</HintPath>
-    </Reference>
-    <Reference Include="LibreMetaverse.Utilities">
-      <HintPath>..\..\libremetaverse\bin\netcoreapp3.0\LibreMetaverse.Utilities.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="libremetaverse\LibreMetaverse.StructuredData\LibreMetaverse.StructuredData.csproj" />
+    <ProjectReference Include="libremetaverse\LibreMetaverse.Utilities\LibreMetaverse.Utilities.csproj" />
+    <ProjectReference Include="libremetaverse\LibreMetaverseTypes\LibreMetaverse.Types.csproj" />
+    <ProjectReference Include="libremetaverse\LibreMetaverse\LibreMetaverse.csproj" />
   </ItemGroup>
 
 </Project>
