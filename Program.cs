@@ -769,9 +769,13 @@ namespace Bot
         {
             set
             {
-                if (value != "")
-                    CalculateKey(value);
-                else NewKey();
+                lock(_lock)
+                {
+
+                    if (value != "")
+                        CalculateKey(value);
+                    else NewKey();
+                }
             }
             get
             {
@@ -811,13 +815,17 @@ namespace Bot
 
         public void NewKey()
         {
-            _key = "".PadLeft(10, '0');
-            _key += ":";
-            _key += "".PadRight(4, '0');
-            _key += ":";
-            _key += "".PadRight(6, '0');
-            _key += ":";
-            _key += "".PadRight(8, '0');
+            lock(_lock)
+            {
+
+                _key = "".PadLeft(10, '0');
+                _key += ":";
+                _key += "".PadRight(4, '0');
+                _key += ":";
+                _key += "".PadRight(6, '0');
+                _key += ":";
+                _key += "".PadRight(8, '0');
+            }
         }
 
         public void SetKey(string Key)
