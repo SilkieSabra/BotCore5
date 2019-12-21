@@ -743,6 +743,15 @@ namespace Bot
             ZHash.Instance.Key = ToHash;
             return ZHash.Instance.Key;
         }
+        
+        public static string Base64Encode(string plainText) {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            return System.Convert.ToBase64String(plainTextBytes);
+        }
+        public static string Base64Decode(string base64EncodedData) {
+            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+        }
     }
 
     public sealed class ZHash
@@ -786,7 +795,7 @@ namespace Bot
 
         public void CalculateKey(string K)
         {
-            string valid = "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            string valid = "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ=.";
             StringBuilder tmp = new StringBuilder(_key);
 
             for (int i = 0; i < _key.Length; i++)
