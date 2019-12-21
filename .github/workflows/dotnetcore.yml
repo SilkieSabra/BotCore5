@@ -5,7 +5,7 @@ on: [push]
 jobs:
   build:
 
-    runs-on: windows
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v1
@@ -13,5 +13,7 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 2.2.108
-    - name: Build with dotnet
+    - name: Restore Dependencies
+      run: dotnet restore
+    - name: Build
       run: dotnet build --configuration Release
