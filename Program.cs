@@ -808,11 +808,11 @@ namespace Bot
                     for (int ii = 0; ii < K.Length; ii++)
                     {
                         int ixi = ii;
-                        while(ixi > valid.Length)
+                        while(ixi >= valid.Length)
                         {
                             ixi = ixi / 2;
                         }
-                        if (ixi < 0) ixi = new Random().Next(0, valid.Length - 1);
+                        if (ixi < 0) ixi = valid[1];
                         byte[] md5Data = MDHash.ComputeHash(Encoding.UTF8.GetBytes((K + i.ToString() + valid[i].ToString() + valid[ii].ToString()).ToCharArray()));
                         // Replace digit with MD5'd  char from String K encoded alongside (i)
                         StringBuilder hashData = new StringBuilder();
