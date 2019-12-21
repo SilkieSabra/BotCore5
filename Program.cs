@@ -795,7 +795,7 @@ namespace Bot
 
         public void CalculateKey(string K)
         {
-            string valid = "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ=.";
+            string valid = "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ=.+/\\";
             StringBuilder tmp = new StringBuilder(_key);
 
             for (int i = 0; i < _key.Length; i++)
