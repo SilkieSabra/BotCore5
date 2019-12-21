@@ -733,5 +733,93 @@ namespace Bot
             SHA256 Hasher = SHA256.Create();
             return Tools.Hash2String(Hasher.ComputeHash(ToHash));
         }
+
+        public static string ZHX(string ToHash)
+        {
+            ZHash.Instance.NewKey();
+            ZHash.Instance.Key = ToHash;
+            return ZHash.Instance.Key;
+        }
+    }
+
+    public sealed class ZHash
+    {
+        private static readonly object _lock = new object();
+        private static ZHash _inst = new ZHash();
+        static ZHash() { }
+
+        public static ZHash Instance
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    if (_inst == null) _inst = new ZHash();
+                    return _inst;
+                }
+            }
+        }
+
+
+        public string _key;
+        public string Key
+        {
+            set
+            {
+                if (value != "")
+                    CalculateKey(value);
+                else NewKey();
+            }
+            get
+            {
+                return _key;
+            }
+        }
+
+
+        public void CalculateKey(string K)
+        {
+            string valid = "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            StringBuilder tmp = new StringBuilder(_key);
+
+            for (int i = 0; i < _key.Length; i++)
+            {
+                char V = _key[i];
+                if (V != ':')
+                {
+                    MD5 MDHash = MD5.Create();
+                    for (int ii = 0; ii < K.Length; ii++)
+                    {
+                        byte[] md5Data = MDHash.ComputeHash(Encoding.UTF8.GetBytes((K + i.ToString() + valid[i].ToString() + valid[ii].ToString()).ToCharArray()));
+                        // Replace digit with MD5'd  char from String K encoded alongside (i)
+                        StringBuilder hashData = new StringBuilder();
+                        foreach (byte b in md5Data)
+                        {
+                            hashData.Append(b.ToString("X2"));
+                        }
+                        string Hash = hashData.ToString();
+                        tmp[i] = Hash[(i > 31 ? 1 : i)];
+                    }
+                }
+            }
+
+            _key = tmp.ToString();
+        }
+
+        public void NewKey()
+        {
+            _key = "".PadLeft(10, '0');
+            _key += ":";
+            _key += "".PadRight(4, '0');
+            _key += ":";
+            _key += "".PadRight(6, '0');
+            _key += ":";
+            _key += "".PadRight(8, '0');
+        }
+
+        public void SetKey(string Key)
+        {
+            _key = Key;
+        }
     }
 }
