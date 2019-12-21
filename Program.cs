@@ -40,6 +40,9 @@ namespace Bot
         public static unsafe void Main(string[] args)
         {
             Console.WriteLine("Setting up Main Configuration");
+            ZHash.Instance.NewKey();
+            ZHash.Instance.Key = "Test";
+            Console.WriteLine("ZHash (Test): " + ZHash.Instance.Key);
             conf = MainConfiguration.Load();
             //MasterObjectCaches = ObjectCaches.Instance;
             Log.debugf(true, "main", args);
