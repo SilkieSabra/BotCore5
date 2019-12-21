@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.Threading.Channels" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="LibreMetaverse">
+      <HintPath>..\..\libremetaverse\bin\netcoreapp3.0\LibreMetaverse.dll</HintPath>
+    </Reference>
+    <Reference Include="LibreMetaverse.StructuredData">
+      <HintPath>..\..\libremetaverse\bin\netcoreapp3.0\LibreMetaverse.StructuredData.dll</HintPath>
+    </Reference>
+    <Reference Include="LibreMetaverse.Types">
+      <HintPath>..\..\libremetaverse\bin\netcoreapp3.0\LibreMetaverse.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="LibreMetaverse.Utilities">
+      <HintPath>..\..\libremetaverse\bin\netcoreapp3.0\LibreMetaverse.Utilities.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

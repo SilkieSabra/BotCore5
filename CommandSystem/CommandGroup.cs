@@ -1,11 +1,4 @@
-﻿/*
-Copyright © 2019 Tara Piccari (Aria; Tashia Redrose)
-Licensed under the AGPL-3.0
-*/
-
-
-
-using System;
+﻿using System;
 using System.Reflection;
 
 

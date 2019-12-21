@@ -1,10 +1,4 @@
-﻿/*
-Copyright © 2019 Tara Piccari (Aria; Tashia Redrose)
-Licensed under the AGPL-3.0
-*/
-
-
-using Bot.CommandSystem;
+﻿using Bot.CommandSystem;
 using Newtonsoft.Json;
 using OpenMetaverse;
 using System;
