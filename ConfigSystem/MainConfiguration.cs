@@ -28,6 +28,8 @@ namespace Bot
         //public License LicenseKey { get; set; }
         public string ActivationCode { get; set; }
 
+        public string GitPassword { get; set; }
+
         public MainConfiguration()
         {
 
