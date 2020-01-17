@@ -619,7 +619,7 @@ namespace Bot
 
             string eMe = e.Message;
             Dictionary<string, string> dstuf = new Dictionary<string, string>();
-            Log.debugf(true, "onChatRecv", new[] { e.Message });
+            //Log.debugf(true, "onChatRecv", new[] { e.Message });
 
             dstuf.Add("type", "chat");
             string SRC = "";
@@ -634,12 +634,12 @@ namespace Bot
 
             foreach (IProgram P in g_ZPrograms)
             {
-                Log.debug(JsonConvert.SerializeObject(dstuf));
+                //Log.debug(JsonConvert.SerializeObject(dstuf));
                 Thread X = new Thread(() => P.passArguments(JsonConvert.SerializeObject(dstuf)));
                 X.Name = "T_" + eMe;
                 X.Start();
             }
-            Log.debugf(false, "onChatRecv", new[] { "" });
+            //Log.debugf(false, "onChatRecv", new[] { "" });
 
         }
 
