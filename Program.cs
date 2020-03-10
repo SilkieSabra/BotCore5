@@ -165,18 +165,18 @@ namespace Bot
             string fna = null;
             string lna = null;
             string pwd = null;
-            if (conf.first == null)
+            if (conf.first == null || conf.first == "")
             {
 
                 if (args.Length == 0)
                 {
 
-                    Log.info(true, "Please enter your avatar's first name:  ");
+                    Log.info(false, "Please enter your avatar's first name:  ");
                     fna = Console.ReadLine();
 
-                    Log.info(true, "Please enter the last name: ");
+                    Log.info(false, "Please enter the last name: ");
                     lna = Console.ReadLine();
-                    Log.info(true, "Now enter your password: ");
+                    Log.info(false, "Now enter your password: ");
                     pwd = Console.ReadLine();
 
                     conf.MainProgramDLL = DefaultProgram;
@@ -186,8 +186,8 @@ namespace Bot
                 }
                 else
                 {
-                    Log.info(true, "Loading...");
-                    Log.info(true, "FirstName: " + args[0]);
+                    Log.info(false, "Loading...");
+                    Log.info(false, "FirstName: " + args[0]);
                     fna = args[0];
                     lna = args[1];
                     pwd = args[2];
@@ -288,8 +288,14 @@ namespace Bot
                         default:
                             {
                                 // Run command!
-                                MessageHandler.Destinations src = MessageHandler.Destinations.DEST_CONSOLE_INFO;
-
+                                Dictionary<string, string> argsx = new Dictionary<string, string>();
+                                argsx.Add("type", "console");
+                                argsx.Add("source", "null");
+                                argsx.Add("request", consoleCmd);
+                                argsx.Add("from", "");
+                                argsx.Add("from_sess", "");
+                                argsx.Add("fromName", "CONSOLE");
+                                passArguments(JsonConvert.SerializeObject(argsx));
                                 break;
                             }
                     }
@@ -509,10 +515,10 @@ namespace Bot
                     //}
                 }
 
-                prompter.Abort();
+                prompter.Interrupt();
                 client.Network.Logout();
             }
-
+            while (client.Network.Connected) { }
             Environment.Exit(0);
 
             //System.Console.WriteLine("PAUSING. PRESS ANY KEY TO EXIT");
