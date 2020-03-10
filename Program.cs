@@ -269,8 +269,6 @@ namespace Bot
                 prompter.Start();
                 CM = new CommandManager(BotSession.Instance.Logger, client, MH.callbacks);
 
-                GroupsCache = new Dictionary<UUID, Group>();
-                ReloadGroupsCache();
 
 
                 while (g_iIsRunning)
@@ -394,6 +392,8 @@ namespace Bot
 
                                 msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Commands found: " + registry.Cmds.Count.ToString());
 
+                                GroupsCache = new Dictionary<UUID, Group>();
+                                ReloadGroupsCache();
                             }
                             catch (Exception E)
                             {
@@ -805,19 +805,19 @@ namespace Bot
             foreach (KeyValuePair<UUID, Group> DoCache in GroupsCache)
             {
                 bool Retry = true;
+                int count = 0;
                 while (Retry)
                 {
-                    int count = 0;
                     client.Groups.RequestGroupRoles(DoCache.Value.ID);
                     if (RoleReply.WaitOne(TimeSpan.FromSeconds(30), false)) { Retry = false; }
                     else
                     {
                         count++;
-                        MH.callbacks(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "There appears to have been a failure requesting the group roles for secondlife:///app/group/" + DoCache.Value.ID.ToString() + "/about - Trying again");
+                        //MH.callbacks(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "There appears to have been a failure requesting the group roles for secondlife:///app/group/" + DoCache.Value.ID.ToString() + "/about - Trying again");
 
                         if(count >= 5)
                         {
-                            MH.callbacks(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Aborting group refresh attempt. Resetting cache and retrying");
+                            MH.callbacks(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Aborting group refresh attempt. Too many errors - Resetting cache and retrying");
                             GroupsEvent.Reset();
                             GroupsCache = new Dictionary<UUID, Group>();
                             client.Groups.CurrentGroups -= Groups_CurrentGroups;
