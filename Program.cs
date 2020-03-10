@@ -814,6 +814,7 @@ namespace Bot
         }
         private static void ReloadGroupsCache()
         {
+            GroupsCache = new Dictionary<UUID, Group>();
             client.Groups.CurrentGroups += Groups_CurrentGroups;
             client.Groups.RequestCurrentGroups();
             GroupsEvent.WaitOne(10000, false);
