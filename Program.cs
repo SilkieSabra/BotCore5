@@ -268,6 +268,11 @@ namespace Bot
 
                 prompter.Start();
                 CM = new CommandManager(BotSession.Instance.Logger, client, MH.callbacks);
+
+                GroupsCache = new Dictionary<UUID, Group>();
+                ReloadGroupsCache();
+
+
                 while (g_iIsRunning)
                 {
                     string consoleCmd = "N/A";
@@ -814,7 +819,6 @@ namespace Bot
         }
         private static void ReloadGroupsCache()
         {
-            GroupsCache = new Dictionary<UUID, Group>();
             client.Groups.CurrentGroups += Groups_CurrentGroups;
             client.Groups.RequestCurrentGroups();
             GroupsEvent.WaitOne(10000, false);
