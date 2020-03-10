@@ -29,6 +29,7 @@ namespace Bot
         public static MessageHandler MH;
         public static CommandRegistry registry;
         public static List<IProgram> g_ZPrograms = new List<IProgram>();
+        public static CommandManager CM = null;
 
         static readonly object _CacheLock = new object();
         //public static License LicenseKey; // Not to be used yet
@@ -37,6 +38,14 @@ namespace Bot
         {
             MH.callbacks(D, x, m);
         }
+
+
+        public static void passArguments(string data)
+        {
+            
+            CM.RunChatCommand(data, client, MH.callbacks, registry);
+        }
+
         public static unsafe void Main(string[] args)
         {
             Console.WriteLine("Setting up Main Configuration");
@@ -45,6 +54,7 @@ namespace Bot
             Console.WriteLine("ZHash (Test): " + ZHash.Instance.Key);
             conf = MainConfiguration.Instance;
             //MasterObjectCaches = ObjectCaches.Instance;
+
 
             if (args.Length == 2)
             {
@@ -257,6 +267,7 @@ namespace Bot
                 });
 
                 prompter.Start();
+                CM = new CommandManager(BotSession.Instance.Logger, client, MH.callbacks);
                 while (g_iIsRunning)
                 {
                     string consoleCmd = "N/A";
@@ -660,13 +671,7 @@ namespace Bot
             dstuf.Add("from_sess", "");
             dstuf.Add("fromName", e.FromName);
 
-            foreach (IProgram P in g_ZPrograms)
-            {
-                //Log.debug(JsonConvert.SerializeObject(dstuf));
-                Thread X = new Thread(() => P.passArguments(JsonConvert.SerializeObject(dstuf)));
-                X.Name = "T_" + eMe;
-                X.Start();
-            }
+            passArguments(JsonConvert.SerializeObject(dstuf));
             //Log.debugf(false, "onChatRecv", new[] { "" });
 
         }
@@ -675,14 +680,109 @@ namespace Bot
 
 
 
+        public void onIMEvent(object sender, InstantMessageEventArgs e)
+        {
 
+            if (e.IM.FromAgentID == client.Self.AgentID) return;
 
+            MainConfiguration mem = MainConfiguration.Instance;
 
+            UUID SentBy = e.IM.FromAgentID;
+            int Level = 0;
+            if (mem.BotAdmins.ContainsKey(SentBy)) Level = mem.BotAdmins[SentBy];
+            if (e.IM.Dialog == InstantMessageDialog.GroupInvitation)
+            {
+                if (Level >= 4)
+                {
+                    client.Self.GroupInviteRespond(e.IM.FromAgentID, e.IM.IMSessionID, true);
+                }
+                else
+                {
+                    client.Self.GroupInviteRespond(e.IM.FromAgentID, e.IM.IMSessionID, false);
+                    MH.callbacks(MessageHandler.Destinations.DEST_AGENT, e.IM.FromAgentID, "You lack the proper permissions to perform this action");
+                }
+            }
+            else if (e.IM.Dialog == InstantMessageDialog.FriendshipOffered)
+            {
+                if (Level >= 4)
+                {
+                    client.Friends.AcceptFriendship(e.IM.FromAgentID, e.IM.IMSessionID);
+                    MH.callbacks(MessageHandler.Destinations.DEST_AGENT, e.IM.FromAgentID, "Welcome to my friends list!");
+                }
+                else
+                {
+                    MH.callbacks(MessageHandler.Destinations.DEST_AGENT, e.IM.FromAgentID, "You lack proper permission");
+                }
+            }
+            else if (e.IM.Dialog == InstantMessageDialog.RequestTeleport)
+            {
+                if (Level >= 3)
+                {
+                    client.Self.TeleportLureRespond(e.IM.FromAgentID, e.IM.IMSessionID, true);
+                    MH.callbacks(MessageHandler.Destinations.DEST_AGENT, e.IM.FromAgentID, "Teleporting...");
+                }
+                else
+                {
+                    client.Self.TeleportLureRespond(e.IM.FromAgentID, e.IM.IMSessionID, false);
+                    MH.callbacks(MessageHandler.Destinations.DEST_AGENT, e.IM.FromAgentID, "You lack permission");
+                }
+            }
+            else if (e.IM.Dialog == InstantMessageDialog.MessageFromObject)
+            {
+                if (Level >= 5)
+                {
+                    // For this to work the object must have been granted auth!!!!!
+                    Dictionary<string, string> args = new Dictionary<string, string>();
+                    args.Add("type", "im");
+                    args.Add("source", "obj");
+                    args.Add("request", e.IM.Message);
+                    args.Add("from", e.IM.FromAgentID.ToString());
+                    args.Add("from_sess", e.IM.IMSessionID.ToString());
+                    args.Add("fromName", e.IM.FromAgentName);
+                    passArguments(JsonConvert.SerializeObject(args));
+                }
+                else
+                {
+                    // If auth is insufficient, ignore it. 
+                }
+            }
+            else if (e.IM.Dialog == InstantMessageDialog.MessageFromAgent || e.IM.Dialog == InstantMessageDialog.SessionSend)
+            {
+                //if (e.IM.Message.Substring(0, 1) != "!") return;
+                string msgs = e.IM.Message;
+                //string msgs = e.IM.Message.Substring(1);
+                // Perform a few tests before live deployment
+                if (IsGroup(e.IM.IMSessionID))
+                {
 
+                    Dictionary<string, string> args = new Dictionary<string, string>();
+                    args.Add("type", "group");
+                    args.Add("source", "agent");
+                    args.Add("request", msgs);
+                    args.Add("from", e.IM.FromAgentID.ToString());
+                    args.Add("from_sess", e.IM.IMSessionID.ToString());
+                    args.Add("fromName", e.IM.FromAgentName);
+                    passArguments(JsonConvert.SerializeObject(args));
+                }
+                else
+                {
+                    Dictionary<string, string> args = new Dictionary<string, string>();
+                    args.Add("type", "im");
+                    args.Add("source", "agent");
+                    args.Add("request", msgs);
+                    args.Add("from", e.IM.FromAgentID.ToString());
+                    args.Add("from_sess", "");
+                    args.Add("fromName", e.IM.FromAgentName);
+                    passArguments(JsonConvert.SerializeObject(args));
+                }
+            }
+
+        }
 
 
         private static Dictionary<UUID, Group> GroupsCache = null;
         private static ManualResetEvent GroupsEvent = new ManualResetEvent(false);
+        private static ManualResetEvent RoleReply = new ManualResetEvent(false);
         private static void Groups_CurrentGroups(object sender, CurrentGroupsEventArgs e)
         {
             if (null == GroupsCache)
@@ -690,6 +790,21 @@ namespace Bot
             else
                 lock (GroupsCache) { GroupsCache = e.Groups; }
             GroupsEvent.Set();
+
+            foreach (KeyValuePair<UUID, Group> DoCache in GroupsCache)
+            {
+                bool Retry = true;
+                while (Retry)
+                {
+                    client.Groups.RequestGroupRoles(DoCache.Value.ID);
+                    if (RoleReply.WaitOne(TimeSpan.FromSeconds(30), false)) { Retry = false; }
+                    else
+                    {
+                        MH.callbacks(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "There appears to have been a failure requesting the group roles for secondlife:///app/group/" + DoCache.Value.ID.ToString() + "/about - Trying again");
+
+                    }
+                }
+            }
         }
         private static void ReloadGroupsCache()
         {
@@ -700,7 +815,7 @@ namespace Bot
             GroupsEvent.Reset();
         }
 
-        private static UUID GroupName2UUID(String groupName)
+        private UUID GroupName2UUID(String groupName)
         {
             UUID tryUUID;
             if (UUID.TryParse(groupName, out tryUUID))
@@ -722,6 +837,15 @@ namespace Bot
             }
             return UUID.Zero;
         }
+
+        private bool IsGroup(UUID grpKey)
+        {
+            // For use in IMs since it appears partially broken at the moment
+            return GroupsCache.ContainsKey(grpKey);
+        }
+
+
+
     }
 
     public class Tools
