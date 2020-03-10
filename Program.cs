@@ -212,6 +212,7 @@ namespace Bot
             client.Self.ChatFromSimulator += onChatRecv;
             client.Self.GroupChatJoined += onJoinGroupChat;
             client.Self.IM += onIMEvent;
+            client.Groups.GroupRoleDataReply += CacheGroupRoles;
             //client.Objects.ObjectUpdate += onObjectUpdate;
             //client.Objects.ObjectProperties += onObjectProperties;
 
@@ -791,6 +792,34 @@ namespace Bot
         }
 
 
+        private static void CacheGroupRoles(object sender, GroupRolesDataReplyEventArgs e)
+        {
+            //MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "[debug] role_reply");
+            if (!Directory.Exists("zGroupCache")) Directory.CreateDirectory("zGroupCache"); // this should be purged at every bot restart!!!
+
+            //MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "[debug] generating groupcache file");
+            zGroupCaches newCache = new zGroupCaches();
+            zGroupCaches.GroupMemoryData gmd = new zGroupCaches.GroupMemoryData();
+            foreach (KeyValuePair<UUID, GroupRole> roleData in e.Roles)
+            {
+                gmd.roleID = roleData.Value.ID;
+                gmd.RoleName = roleData.Value.Name;
+                gmd.Title = roleData.Value.Title;
+                gmd.Powers = roleData.Value.Powers;
+
+
+                newCache.GMD.Add(gmd);
+
+            }
+            newCache.GroupID = e.GroupID;
+            newCache.Save(e.GroupID.ToString());
+            RoleReply.Set();
+            FileInfo fi = new FileInfo("GroupCache/" + e.GroupID.ToString() + ".bdf");
+
+            //MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "[debug] Roles for secondlife:///app/group/" + e.GroupID.ToString() + "/about have been saved to: GroupCache/" + e.GroupID.ToString() + ".bdf\nFileSize: "+fi.Length.ToString(), 55);
+
+
+        }
         private static Dictionary<UUID, Group> GroupsCache = null;
         private static ManualResetEvent GroupsEvent = new ManualResetEvent(false);
         private static ManualResetEvent RoleReply = new ManualResetEvent(false);
