@@ -236,9 +236,9 @@ namespace Bot.CommandSystem
                                 }
                                 pos++;
                                 //(UUID client, int level, GridClient grid, string[] additionalArgs,
-                                //SysOut log, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source,
+                                //MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source,
                                 //CommandRegistry registry, UUID agentKey, string agentName)
-                                Thread CommandThread = new Thread(() => cgX.AssignedMethod.Invoke(ovj, new object[] { user, level, client, additionalArgs, Log, MHE, source, this, agentKey, agentName }));
+                                Thread CommandThread = new Thread(() => cgX.AssignedMethod.Invoke(ovj, new object[] { user, level, client, additionalArgs, MHE, source, this, agentKey, agentName }));
                                 CommandThread.Start();
                             }
                         }
