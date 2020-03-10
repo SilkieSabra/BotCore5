@@ -15,7 +15,7 @@ jobs:
       with:
         submodules: true
     - name: Setup .NET Core
-      uses: actions/setup-dotnet
+      uses: actions/setup-dotnet@v1.4.0
       with:
         dotnet-version: 3.1.100
       if: matrix.os == 'macOS-latest' || matrix.os == 'ubuntu-latest'
