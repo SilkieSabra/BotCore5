@@ -807,11 +807,27 @@ namespace Bot
                 bool Retry = true;
                 while (Retry)
                 {
+                    int count = 0;
                     client.Groups.RequestGroupRoles(DoCache.Value.ID);
                     if (RoleReply.WaitOne(TimeSpan.FromSeconds(30), false)) { Retry = false; }
                     else
                     {
+                        count++;
                         MH.callbacks(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "There appears to have been a failure requesting the group roles for secondlife:///app/group/" + DoCache.Value.ID.ToString() + "/about - Trying again");
+
+                        if(count >= 5)
+                        {
+                            MH.callbacks(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Aborting group refresh attempt. Resetting cache and retrying");
+                            GroupsEvent.Reset();
+                            GroupsCache = new Dictionary<UUID, Group>();
+                            client.Groups.CurrentGroups -= Groups_CurrentGroups;
+
+                            Dictionary<string, string> act = new Dictionary<string, string>();
+                            act.Add("type", "reload_groups");
+                            MH.callbacks(MessageHandler.Destinations.DEST_ACTION, UUID.Zero, JsonConvert.SerializeObject(act));
+
+                            return;
+                        }
 
                     }
                 }
