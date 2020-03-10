@@ -211,7 +211,7 @@ namespace Bot
             if (File.Exists("ObjectCache.bdf")) File.Delete("ObjectCache.bdf");
             client.Self.ChatFromSimulator += onChatRecv;
             client.Self.GroupChatJoined += onJoinGroupChat;
-
+            client.Self.IM += onIMEvent;
             //client.Objects.ObjectUpdate += onObjectUpdate;
             //client.Objects.ObjectProperties += onObjectProperties;
 
@@ -220,7 +220,7 @@ namespace Bot
 
             //client.Objects.TerseObjectUpdate += onObjectTerseUpdate;
 
-
+            
             client.Settings.OBJECT_TRACKING = true;
             client.Settings.ALWAYS_DECODE_OBJECTS = true;
             client.Settings.USE_ASSET_CACHE = true;
@@ -686,7 +686,7 @@ namespace Bot
 
 
 
-        public void onIMEvent(object sender, InstantMessageEventArgs e)
+        public static void onIMEvent(object sender, InstantMessageEventArgs e)
         {
 
             if (e.IM.FromAgentID == client.Self.AgentID) return;
