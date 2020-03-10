@@ -12,7 +12,7 @@ namespace Bot.Assemble
         {
             get
             {
-                return MainConfiguration.Load().GitPassword;
+                return MainConfiguration.Instance.GitPassword;
             }
         }
     }
