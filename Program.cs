@@ -844,7 +844,7 @@ namespace Bot
             return UUID.Zero;
         }
 
-        private bool IsGroup(UUID grpKey)
+        private static bool IsGroup(UUID grpKey)
         {
             // For use in IMs since it appears partially broken at the moment
             return GroupsCache.ContainsKey(grpKey);
