@@ -52,13 +52,13 @@ namespace Bot
                 if (args[0] == "-a")
                 {
                     conf.ActivationCode = args[1];
-                    SM.Write<MainConfiguration>("Main", conf);
+                    conf.Save();
                     return;
                 }
                 else if (args[0] == "-m")
                 {
                     conf.MainProgramDLL = args[1];
-                    SM.Write<MainConfiguration>("Main", conf);
+                    conf.Save();
                     return;
                 }
             }
@@ -69,7 +69,7 @@ namespace Bot
                     conf.first = args[1];
                     conf.last = args[2];
                     conf.password = args[3];
-                    SM.Write<MainConfiguration>("Main", conf);
+                    conf.Save();
                     return;
                 }
             }
@@ -187,7 +187,7 @@ namespace Bot
                 conf.first = fna;
                 conf.last = lna;
                 conf.password = pwd;
-                SM.Write<MainConfiguration>("Main", conf);
+                conf.Save();
             }
             else
             {

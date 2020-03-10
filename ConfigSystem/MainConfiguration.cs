@@ -81,5 +81,12 @@ namespace Bot
 
             }
         }
+
+        public void Save()
+        {
+            SerialManager sm = new SerialManager();
+            sm.Write<MainConfiguration>("Main", this);
+            sm = null;
+        }
     }
 }
