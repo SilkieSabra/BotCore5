@@ -17,7 +17,7 @@ namespace Bot
         private List<ActionPacket> ActionQueue = new List<ActionPacket>();
         private List<DiscordAction> DiscordQueue = new List<DiscordAction>();
         public ManualResetEvent GroupJoinWaiter = new ManualResetEvent(false);
-        private SysOut Log = SysOut.Instance;
+        private Logger Log = BotSession.Instance.Logger;
 
 
         [Flags]
@@ -26,10 +26,9 @@ namespace Bot
             DEST_AGENT = 1,
             DEST_GROUP = 2,
             DEST_LOCAL = 4,
-            DEST_CONSOLE_DEBUG = 8,
-            DEST_CONSOLE_INFO = 16,
-            DEST_ACTION = 32,
-            DEST_DISCORD = 64
+            DEST_CONSOLE_INFO = 8,
+            DEST_ACTION = 16,
+            DEST_DISCORD = 32
         };
 
         public struct MessageQueuePacket
@@ -102,13 +101,9 @@ namespace Bot
             {
                 client.Self.InstantMessage(pkt.DestID, "[" + MSGQueue.Count.ToString() + "] " + pkt.Msg);
             }
-            else if (pkt.Dest == Destinations.DEST_CONSOLE_DEBUG)
-            {
-                Log.debug("[" + MSGQueue.Count.ToString() + "] " + pkt.Msg);
-            }
             else if (pkt.Dest == Destinations.DEST_CONSOLE_INFO)
             {
-                Log.info("[" + MSGQueue.Count.ToString() + "] " + pkt.Msg);
+                Log.info(Restore:true, "[" + MSGQueue.Count.ToString() + "] " + pkt.Msg);
             }
             else if (pkt.Dest == Destinations.DEST_GROUP)
             {

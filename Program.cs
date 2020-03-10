@@ -17,7 +17,7 @@ namespace Bot
 {
     public class Program
     {
-        public static SysOut Log = SysOut.Instance;
+        public static Logger Log = new Logger("Core5");
         public static double BotVer = ASMInfo.BotVer;
         public static string BotStr = ASMInfo.BotName; // internal identifier for linden
         public static MainConfiguration conf;
@@ -43,9 +43,8 @@ namespace Bot
             ZHash.Instance.NewKey();
             ZHash.Instance.Key = "Test";
             Console.WriteLine("ZHash (Test): " + ZHash.Instance.Key);
-            conf = MainConfiguration.Load();
+            conf = MainConfiguration.Instance;
             //MasterObjectCaches = ObjectCaches.Instance;
-            Log.debugf(true, "main", args);
 
             if (args.Length == 2)
             {
@@ -162,12 +161,12 @@ namespace Bot
                 if (args.Length == 0)
                 {
 
-                    Log.info("Please enter your avatar's first name:  ");
+                    Log.info(true, "Please enter your avatar's first name:  ");
                     fna = Console.ReadLine();
 
-                    Log.info("Please enter the last name: ");
+                    Log.info(true, "Please enter the last name: ");
                     lna = Console.ReadLine();
-                    Log.info("Now enter your password: ");
+                    Log.info(true, "Now enter your password: ");
                     pwd = Console.ReadLine();
 
                     conf.MainProgramDLL = DefaultProgram;
@@ -177,8 +176,8 @@ namespace Bot
                 }
                 else
                 {
-                    Log.info("Loading...");
-                    Log.info("FirstName: " + args[0]);
+                    Log.info(true, "Loading...");
+                    Log.info(true, "FirstName: " + args[0]);
                     fna = args[0];
                     lna = args[1];
                     pwd = args[2];
@@ -189,7 +188,6 @@ namespace Bot
                 conf.last = lna;
                 conf.password = pwd;
                 SM.Write<MainConfiguration>("Main", conf);
-                Log.debug("FirstName in Config: " + conf.first);
             }
             else
             {
@@ -220,6 +218,10 @@ namespace Bot
             client.Throttle.Land = 100000;
             client.Throttle.Task = 100000;
             client.Throttle.Total = 100000;
+            client.Settings.LOG_RESENDS = false;
+            client.Settings.LOG_ALL_CAPS_ERRORS = false;
+            client.Settings.LOG_DISKCACHE = false;
+
 
             client.Settings.ALWAYS_REQUEST_OBJECTS = true;
 
@@ -243,16 +245,45 @@ namespace Bot
                     File.Delete("XUP");
                     MH.callbacks(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Updated to version " + BotStr + " - "+BotVer.ToString());
                 }
-                Log.debugf(true, "SL_NET", new[] { "logged_in" });
 
                 // Setup BotSession Singleton!
                 BotSession.Instance.grid = client;
                 BotSession.Instance.Logger = Log;
                 BotSession.Instance.MHE = MH.callbacks;
                 BotSession.Instance.MH = MH;
-                BotSession.Instance.ConfigurationHandle = conf;
+
+                Thread prompter = new Thread(() => {
+                    BotSession.Instance.Logger.DoPrompt();
+                });
+
+                prompter.Start();
                 while (g_iIsRunning)
                 {
+                    string consoleCmd = "N/A";
+                    try
+                    {
+                        consoleCmd = BotSession.Instance.Logger.CheckForNewCmd();
+                    }catch(Exception e)
+                    {
+                        // no command is set yet!
+                    }
+
+                    switch (consoleCmd)
+                    {
+                        case "N/A":
+                            {
+                                break;
+                            }
+                        default:
+                            {
+                                // Run command!
+                                MessageHandler.Destinations src = MessageHandler.Destinations.DEST_CONSOLE_INFO;
+
+                                break;
+                            }
+                    }
+                    // Pass to the command handlers
+
                     client.Self.RetrieveInstantMessages();
                     if (client.Network.Connected == false) g_iIsRunning = false; // Quit the program and restart immediately!
                     Thread.Sleep(2000);
@@ -291,17 +322,17 @@ namespace Bot
                     // Check MainConfiguration for a mainProgram handle
                     if (conf.MainProgramDLL == null)
                     {
-                        Log.info("Setting main program library");
+                        Log.info(true, "Setting main program library");
                         conf.MainProgramDLL = DefaultProgram;
                         SM.Write<MainConfiguration>("Main", conf);
 
                     }
                     if (File.Exists(conf.MainProgramDLL) == false)
                     {
-                        Log.info("MainProgram Library: " + conf.MainProgramDLL + " does not exist");
+                        Log.info(true, "MainProgram Library: " + conf.MainProgramDLL + " does not exist");
                         if (conf.MainProgramDLL == DefaultProgram)
                         {
-                            Log.info("FATAL: BlankBot.dll must exist to proceed");
+                            Log.info(true, "FATAL: BlankBot.dll must exist to proceed");
                             msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "BlankBot.dll does not exist. Please place the blank bot program into the same folder as 'Bot.dll'. Load cannot proceed any further Terminating");
 
                         }
@@ -313,7 +344,7 @@ namespace Bot
                         {
                             registry = CommandRegistry.Instance;
                             //ReloadGroupsCache();
-                            Log.info("MainProgram exists");
+                            Log.info(true, "MainProgram exists");
 
                             try
                             {
@@ -330,12 +361,12 @@ namespace Bot
                                     client.Self.IM += plugin.onIMEvent;
                                     programCount++;
 
-                                    Log.debug("Plugin: " + plugin.ProgramName + " [" + PA.LoadedASM.FullName + "] added to g_ZPrograms");
+                                    Log.info(true, "Plugin: " + plugin.ProgramName + " [" + PA.LoadedASM.FullName + "] added to g_ZPrograms");
                                     if (File.Exists(plugin.ProgramName + ".bdf"))
                                         plugin.LoadConfiguration(); // will throw an error if BlankBot tries to load config
                                 }
 
-                                Log.debug(g_ZPrograms.Count.ToString() + " programs linked");
+                                Log.info(true, g_ZPrograms.Count.ToString() + " programs linked");
                                 if (g_ZPrograms.Count > 0) msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Default Program [" + conf.MainProgramDLL + "] has been loaded, " + programCount.ToString() + " plugin(s) loaded");
                                 registry.LocateCommands();
 
@@ -347,7 +378,7 @@ namespace Bot
                                 string Msg = E.Message;
                                 string STACK = E.StackTrace.Replace("ZNI", "");
                                 Msg = Msg.Replace("ZNI", "");
-                                Log.debug("Generic Exception Caught: " + Msg + " [0x0A]");
+                                Log.info(true, "Generic Exception Caught: " + Msg + " [0x0A]");
                                 int i;
                                 int* ptr = &i;
                                 IntPtr addr = (IntPtr)ptr;
@@ -375,9 +406,7 @@ namespace Bot
                     }
                     else
                     {
-                        Log.debug("TICK REPLY: " + jsonReply);
                         dynamic jsonObj = JsonConvert.DeserializeObject(jsonReply);
-                        Log.debug("TYPE: " + jsonObj.type);
                         string tp = jsonObj.type;
                         switch (tp)
                         {
@@ -402,7 +431,7 @@ namespace Bot
                             case "exit":
                                 {
 
-                                    Log.info("Logging off!");
+                                    Log.info(false, "Logging off!");
                                     g_iIsRunning = false;
                                     break;
                                 }
@@ -430,7 +459,7 @@ namespace Bot
                                             g_ZPrograms.Add(plugin);
                                             client.Self.IM += plugin.onIMEvent;
                                             programCount++;
-                                            Log.debug("Plugin: " + plugin.ProgramName + " [" + Plugs.LoadedASM.FullName + "] added to g_ZPrograms");
+                                            Log.info(true, "Plugin: " + plugin.ProgramName + " [" + Plugs.LoadedASM.FullName + "] added to g_ZPrograms");
                                             if (File.Exists(plugin.ProgramName + ".bdf"))
                                                 plugin.LoadConfiguration(); // will throw an error if BlankBot tries to load config
                                         }
@@ -450,7 +479,7 @@ namespace Bot
                             default:
                                 {
 
-                                    Log.debug("Unknown response code");
+                                    Log.info(true, "Unknown response code");
                                     break;
                                 }
                         }
@@ -469,13 +498,12 @@ namespace Bot
                     //}
                 }
 
-                Log.debugf(false, "SL_NET", new[] { "" });
-
+                prompter.Abort();
                 client.Network.Logout();
             }
 
+            Environment.Exit(0);
 
-            Log.debugf(false, "main", args);
             //System.Console.WriteLine("PAUSING. PRESS ANY KEY TO EXIT");
             //System.Console.ReadKey();
         }

@@ -34,10 +34,14 @@ namespace Bot
 
 
         public GridClient grid { get; set; }
-        public SysOut Logger { get; set; }
+        public Logger Logger { get; set; }
         public MessageHandler.MessageHandleEvent MHE;
         public MessageHandler MH;
 
-        public MainConfiguration ConfigurationHandle;
+        public MainConfiguration ConfigurationHandle { 
+            get {
+                return MainConfiguration.Instance;
+            } 
+        }
     }
 }

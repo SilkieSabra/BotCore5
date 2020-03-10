@@ -74,7 +74,8 @@ namespace Bot
                     File.WriteAllText(Name + ".json", Json);
                 } catch(Exception E)
                 {
-                    Console.WriteLine(E.Message);
+                    BotSession.Instance.Logger.info(true, E.Message);
+                    
                 }
             }
 
@@ -91,14 +92,16 @@ namespace Bot
                     string serial = File.ReadAllText(Name + ".json");
                     
                     obj = (T)JsonConvert.DeserializeObject<T>(serial);
-                    Console.WriteLine("Returning class object");
+                    BotSession.Instance.Logger.info(true, "Returning class object");
+                    
 
                     if (obj == null) obj = default(T);
                     return obj;
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    BotSession.Instance.Logger.info(true, e.Message);
+                    
                     throw new FileNotFoundException();
                 }
             }

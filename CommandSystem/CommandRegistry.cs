@@ -57,7 +57,7 @@ namespace Bot.CommandSystem
         // Define the registry
         public Dictionary<string, CommandGroup> Cmds = new Dictionary<string, CommandGroup>();
         public GridClient client;
-        public SysOut Log;
+        public Logger Log;
         public IConfig config;
         public MessageHandler.MessageHandleEvent MHEx;
         public void LocateCommands()
@@ -110,7 +110,7 @@ namespace Bot.CommandSystem
 
                                                 if (Cmds.ContainsKey(CG.Command) == false)
                                                 {
-                                                    Console.WriteLine("DISCOVER: " + CG.Command);
+                                                    Log.info(true, "DISCOVER: " + CG.Command);
                                                     Cmds.Add(CG.Command, CG);
                                                 }
                                             }
@@ -123,7 +123,7 @@ namespace Bot.CommandSystem
                         }
                     }
                 }
-                Console.WriteLine("Discovered " + Cmds.Count.ToString() + " total commands");
+                Log.info(log:"Discovered " + Cmds.Count.ToString() + " total commands");
             }
             catch (ReflectionTypeLoadException e)
             {
