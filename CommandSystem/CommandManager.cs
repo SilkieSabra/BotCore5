@@ -61,7 +61,11 @@ namespace Bot.CommandSystem
             if (parameters.type == "chat") sourceLoc = MessageHandler.Destinations.DEST_LOCAL;
             else if (parameters.type == "group") sourceLoc = MessageHandler.Destinations.DEST_GROUP;
             else if (parameters.type == "im") sourceLoc = MessageHandler.Destinations.DEST_AGENT;
-            else if (parameters.type == "console") sourceLoc = MessageHandler.Destinations.DEST_CONSOLE_INFO;
+            else if (parameters.type == "console")
+            {
+                userLevel = 5000;
+                sourceLoc = MessageHandler.Destinations.DEST_CONSOLE_INFO;
+            }
             else sourceLoc = MessageHandler.Destinations.DEST_LOCAL;
 
             string agentName = parameters.fromName;
