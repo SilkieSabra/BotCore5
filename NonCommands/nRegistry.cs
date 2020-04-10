@@ -17,28 +17,23 @@ namespace Bot.NonCommands
             {
                 foreach(Type t in a.GetTypes())
                 {
-                    if (t.IsClass)
+                    if (t.IsClass && t!=null)
                     {
-                        try
+                        foreach (MethodInfo mi in t.GetMethods())
                         {
-
-                            foreach (NotCommand NC in (NotCommand[])t.GetCustomAttributes(false))
+                            NotCommand[] nc = (NotCommand[])mi.GetCustomAttributes(typeof(NotCommand), false);
+                            if (nc.Length>0)
                             {
-                                MethodInfo mi = t.GetMethod("handle");
-
                                 ThreadStart work = delegate
                                 {
+
+
                                     mi.Invoke(Activator.CreateInstance(mi.DeclaringType), new object[] { request, agentKey, agentName, sourceLoc, originator });
                                 };
                                 Thread T = new Thread(work);
-
-
-                                // _mi.Invoke(Activator.CreateInstance(_mi.DeclaringType), new object[] {  });
                                 T.Start();
-                            }
-                        }catch(Exception e)
-                        {
 
+                            }
                         }
                     }
                 }
