@@ -17,7 +17,7 @@ namespace Bot
 {
     public class Program
     {
-        public static Logger Log = new Logger("Core5");
+        public static Logger Log;
         public static double BotVer = ASMInfo.BotVer;
         public static string BotStr = ASMInfo.BotName; // internal identifier for linden
         public static MainConfiguration conf;
@@ -49,6 +49,8 @@ namespace Bot
         public static unsafe void Main(string[] args)
         {
             Console.WriteLine("Setting up Main Configuration");
+            Log = new Logger("BotCore5");
+            BotSession.Instance.Logger = Log;
             ZHash.Instance.NewKey();
             ZHash.Instance.Key = "Test";
             Console.WriteLine("ZHash (Test): " + ZHash.Instance.Key);
