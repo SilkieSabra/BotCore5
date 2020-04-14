@@ -467,7 +467,7 @@ namespace Bot
                                 }
                             case "load_program":
                                 {
-                                    msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Stand by.. loading secondary libraries");
+                                    //msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Stand by.. loading secondary libraries");
                                     string newProg = jsonObj.newProgram;
                                     if (File.Exists(newProg + ".dll"))
                                     {
@@ -485,7 +485,7 @@ namespace Bot
                                             client.Self.IM += plugin.onIMEvent;
                                             programCount++;
                                             Log.info(true, "Plugin: " + plugin.ProgramName + " [" + Plugs.LoadedASM.FullName + "] added to g_ZPrograms");
-                                            if (File.Exists(plugin.ProgramName + ".bdf"))
+                                            if (File.Exists(plugin.ProgramName + ".json"))
                                                 plugin.LoadConfiguration(); // will throw an error if BlankBot tries to load config
                                         }
 
