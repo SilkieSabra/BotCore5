@@ -55,6 +55,8 @@ namespace Bot
 
         public string GitPassword { get; set; } = "NOT_SET";
 
+        public int WebServerPort { get; set; } = 35591;
+
         public Dictionary<UUID, int> BotAdmins { get; set; } = new Dictionary<UUID, int>();
 
 
