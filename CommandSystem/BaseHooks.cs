@@ -123,5 +123,26 @@ namespace Bot.CommandSystem
                 MHE(source, client, "secondlife:///app/agent/" + MainConfiguration.Instance.BotAdmins.ElementAt(i).Key.ToString() + "/about [" + MainConfiguration.Instance.BotAdmins.ElementAt(i).Value.ToString() + "] " + MainConfiguration.Instance.BotAdmins.ElementAt(i).Key.ToString());
             }
         }
+
+
+        [CommandGroup("terminate_bot", 5, 0, "", MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_CONSOLE_INFO | MessageHandler.Destinations.DEST_DISCORD)]
+        public void PerformExit(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
+        {
+            MHE(source, client, "Bot exit initiated.");
+            MHE(MessageHandler.Destinations.DEST_ACTION, UUID.Zero, "{'type':'exit'}");
+        }
+        // !!help
+        [CommandGroup("!help", 0, 0, "Prints the entire help registry", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
+        [CommandGroup("bot.help", 0, 0, "Alias to !help", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP)]
+        public void PrintAllHelp(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
+        {
+            MHE(source, client, "All commands viewable at: https://zontreck.dev:35591/help");
+        }
+        // !help "command"
+        [CommandGroup("help", 0, 1, "Prints help for one command", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
+        public void PrintHelp(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
+        {
+            registry.PrintHelp(source, additionalArgs[0], client);
+        }
     }
 }

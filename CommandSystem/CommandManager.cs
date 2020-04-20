@@ -78,8 +78,15 @@ namespace Bot.CommandSystem
                 string GroupName = client.Groups.GroupName2KeyCache[fromID];
 
                 GroupLog.Instance.WriteLogEntry(GroupName, "secondlife:///app/agent/" + agentKey.ToString() + "/about (" + agentName + ") : " + request);
+
+
+                if (agentKey == client.Self.AgentID) return false;
             }
-            else { agentKey = fromID; }
+            else {
+                agentKey = fromID;
+
+                if (agentKey == client.Self.AgentID) return false;
+            }
 
             if (request.Substring(0, 1) != "!")
             {

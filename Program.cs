@@ -644,7 +644,7 @@ namespace Bot
             */
         }
 
-        [CommandGroup("load_dll", 5, 1, "load_dll [DLL_Name] - Loads a DLL and searches for entry points", MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_AGENT)]
+        [CommandGroup("load_dll", 5, 1, "load_dll [DLL_Name] - Loads a DLL and searches for entry points", MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
         public void load_DLL(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
         {
             // Load DLL
@@ -661,7 +661,7 @@ namespace Bot
         }
 
 
-        [CommandGroup("unload_dll", 5, 1, "unload_dll [DLL_Name] - Prevents DLL from reloading at next reboot", MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_AGENT)]
+        [CommandGroup("unload_dll", 5, 1, "unload_dll [DLL_Name] - Prevents DLL from reloading at next reboot", MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
         public void unload_DLL(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
         {
             // Load DLL
@@ -674,7 +674,7 @@ namespace Bot
             cfg.Save();
         }
 
-        [CommandGroup("assign", 75, 1, "assign [DLL Name] - Sets the active DLL", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL)]
+        [CommandGroup("assign", 75, 1, "assign [DLL Name] - Sets the active DLL", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
         public void SetActiveProgram(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
         {
             MHE(MessageHandler.Destinations.DEST_ACTION, UUID.Zero, "{\"type\":\"assignProgram\",\"newProgram\":\"" + additionalArgs[0] + "\"}");
@@ -735,7 +735,6 @@ namespace Bot
         private static void onChatRecv(object sender, ChatEventArgs e)
         {
             if (e.Message == "" || e.Message == "typing") return;
-            if (e.SourceID == client.Self.AgentID) return;
 
             string eMe = e.Message;
             Dictionary<string, string> dstuf = new Dictionary<string, string>();
