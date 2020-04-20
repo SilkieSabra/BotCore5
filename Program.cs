@@ -56,6 +56,7 @@ namespace Bot
             ZHash.Instance.Key = "Test";
             Console.WriteLine("ZHash (Test): " + ZHash.Instance.Key);
             conf = MainConfiguration.Instance;
+            conf.Load();
             //MasterObjectCaches = ObjectCaches.Instance;
 
 

@@ -70,19 +70,12 @@ namespace Bot
 
         public void Load()
         {
-            MainConfiguration X = new MainConfiguration();
+            inst = new MainConfiguration();
             SerialManager sm = new SerialManager();
             try
             {
-                X = sm.Read<MainConfiguration>("Main");
+                inst = sm.Read<MainConfiguration>("Main");
 
-                MainProgramDLL = X.MainProgramDLL;
-                first = X.first;
-                last = X.last;
-                ActivationCode = X.ActivationCode;
-                password = X.password;
-                GitPassword = X.GitPassword;
-                BotAdmins = X.BotAdmins;
 
             }
             catch (FileNotFoundException e)
