@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Bot.CommandSystem;
+using OpenMetaverse;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -53,6 +55,43 @@ namespace Bot.WebHookServer
             output.Write(buffer, 0, buffer.Length);
             output.Close();
 
+        }
+
+
+        [CommandGroup("webhook_auth", 4, 2, "webhook_auth [github_name] [y/n]", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP)]
+        public void WebHookAuthMgr(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
+        {
+            MainConfiguration cfg = MainConfiguration.Instance;
+
+            MHE(source, client, "Checking..");
+
+            if (cfg.Authed(additionalArgs[0]))
+            {
+                if (additionalArgs[1] == "y")
+                {
+                    MHE(source, client, "Not modified. Already authorized");
+                }
+                else
+                {
+                    MHE(source, client, "Authorization revoked - git alerts from this user will not be whitelisted");
+                    cfg.AuthedGithubUsers.Remove(additionalArgs[0]);
+                }
+            }
+            else
+            {
+                if (additionalArgs[1] == "y")
+                {
+                    cfg.AuthedGithubUsers.Add(additionalArgs[0]);
+                    MHE(source, client, "Authorized.");
+                }
+                else
+                {
+                    MHE(source, client, "Not modified. Already  not whitelisted");
+                }
+            }
+
+
+            cfg.Save();
         }
     }
 }

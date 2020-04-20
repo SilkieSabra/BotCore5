@@ -59,6 +59,14 @@ namespace Bot
 
         public Dictionary<UUID, int> BotAdmins { get; set; } = new Dictionary<UUID, int>();
 
+        public List<string> AuthedGithubUsers { get; set; } = new List<string>();
+        public List<string> LinkedDLLs { get; set; } = new List<string>();
+
+        public bool Authed(string GHLogin)
+        {
+            if (AuthedGithubUsers.Contains(GHLogin)) return true;
+            else return false;
+        }
 
         public void Load()
         {

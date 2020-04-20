@@ -10,10 +10,12 @@ namespace Bot
     public class PluginActivator
     {
         public Assembly LoadedASM = null;
-        public void LoadLibrary(string DLL)
+
+        public Assembly LoadLibrary(string DLL)
         {
 
             LoadedASM = Assembly.LoadFrom(DLL);
+            return LoadedASM;
         }
 
         public List<IProgram> Activate(Assembly asm)
