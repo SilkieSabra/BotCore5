@@ -12,6 +12,7 @@ using OpenMetaverse.Packets;
 using Bot.Assemble;
 using OpenMetaverse.Interfaces;
 using System.Security.Cryptography;
+using System.Reflection;
 
 namespace Bot
 {
@@ -259,6 +260,7 @@ namespace Bot
                     MH.callbacks(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Updated to version " + BotStr + " - "+BotVer.ToString());
                 }
 
+                
                 // Setup BotSession Singleton!
                 BotSession.Instance.grid = client;
                 BotSession.Instance.Logger = Log;
@@ -368,13 +370,20 @@ namespace Bot
                             registry = CommandRegistry.Instance;
                             //ReloadGroupsCache();
                             Log.info(true, "MainProgram exists");
-
+                            Assembly _s = Assembly.GetExecutingAssembly();
                             try
                             {
                                 int programCount = 0;
                                 PluginActivator PA = new PluginActivator();
                                 PA.LoadLibrary(conf.MainProgramDLL);
+                                
                                 List<IProgram> plugins = PA.Activate(PA.LoadedASM);
+                                List<IProgram> mainExe = PA.Activate(_s);
+
+                                foreach(IProgram plug in mainExe)
+                                {
+                                    plugins.Add(plug);
+                                }
 
                                 foreach (IProgram plugin in plugins)
                                 {
@@ -385,7 +394,7 @@ namespace Bot
                                     programCount++;
 
                                     Log.info(true, "Plugin: " + plugin.ProgramName + " [" + PA.LoadedASM.FullName + "] added to g_ZPrograms");
-                                    if (File.Exists(plugin.ProgramName + ".bdf"))
+                                    if (File.Exists(plugin.ProgramName + ".json"))
                                         plugin.LoadConfiguration(); // will throw an error if BlankBot tries to load config
                                 }
 
