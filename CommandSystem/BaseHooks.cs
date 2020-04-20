@@ -34,7 +34,7 @@ namespace Bot.CommandSystem
                 "}table.HelpTable tfoot.links{    text-align: right;}table.HelpTable tfoot.links a{display: inline - block;" +
                 "background: #1C6EA4;  color: #FFFFFF;  padding: 2px 8px;    border - radius: 5px;}</style>";
 
-            Final += "<table class='HelpTable'><thead><tr><th>Bot Version</th><th>5</th></tr></table><br/>";
+            Final += "<table class='HelpTable'><thead><tr><th>Bot Version</th><th>"+ASMInfo.BotVer+"</th></tr></table><br/>";
 
             Final += "<table class='HelpTable'><thead><tr><th>Command</th><th>Minimum Level Required</th><th>Usage</th><th>Allowed Sources</th><th>Number of Arguments required</th></thead><tbody>";
             foreach (KeyValuePair<string, CommandGroup> cmd in reg.Cmds)
