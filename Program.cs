@@ -236,6 +236,7 @@ namespace Bot
             client.Settings.LOG_RESENDS = false;
             client.Settings.LOG_ALL_CAPS_ERRORS = false;
             client.Settings.LOG_DISKCACHE = false;
+            
 
 
             client.Settings.ALWAYS_REQUEST_OBJECTS = true;
