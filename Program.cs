@@ -675,10 +675,45 @@ namespace Bot
             cfg.Save();
         }
 
-        [CommandGroup("assign", 75, 1, "assign [DLL Name] - Sets the active DLL", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
+        [CommandGroup("assign", 75, 1, "assign [DLL Name] - Sets the primary active DLL", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
         public void SetActiveProgram(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
         {
             MHE(MessageHandler.Destinations.DEST_ACTION, UUID.Zero, "{\"type\":\"assignProgram\",\"newProgram\":\"" + additionalArgs[0] + "\"}");
+        }
+        private ManualResetEvent profile_get = new ManualResetEvent(false);
+        private Avatar.AvatarProperties Properties_AV;
+        [CommandGroup("set_profile_text", 75, 1, "set_profile_text [text:Base64] - Sets the profile text", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
+        public void setProfileText(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
+        {
+            MHE(source, client, "Setting...");
+
+            BotSession.Instance.grid.Avatars.AvatarPropertiesReply += Avatars_AvatarPropertiesReply;
+            BotSession.Instance.grid.Avatars.RequestAvatarProperties(BotSession.Instance.grid.Self.AgentID);
+            profile_get.Reset();
+
+            if (profile_get.WaitOne(TimeSpan.FromSeconds(30)))
+            {
+                Properties_AV.AboutText = Encoding.UTF8.GetString(Convert.FromBase64String(additionalArgs[0]));
+                
+                BotSession.Instance.grid.Self.UpdateProfile(Properties_AV);
+                MHE(source, client, "Profile text set");
+            }
+            else
+            {
+                MHE(source, client, "The profile text could not be set. Timeout experienced");
+
+                BotSession.Instance.grid.Avatars.AvatarPropertiesReply -= Avatars_AvatarPropertiesReply;
+            }
+        
+        }
+
+        private void Avatars_AvatarPropertiesReply(object sender, AvatarPropertiesReplyEventArgs e)
+        {
+            Properties_AV = e.Properties;
+
+            profile_get.Set();
+
+            BotSession.Instance.grid.Avatars.AvatarPropertiesReply -= Avatars_AvatarPropertiesReply;
         }
 
         [STAThread()]
