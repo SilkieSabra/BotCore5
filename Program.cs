@@ -394,7 +394,7 @@ namespace Bot
                                         plugins.Add(prog, DLLID);
                                     }
 
-                                    msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, $"Plugin loaded: {DLL}.dll, {vx} threads");
+                                    //msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, $"Plugin loaded: {DLL}.dll, {vx} threads");
                                     
                                 }
 
@@ -422,10 +422,10 @@ namespace Bot
                                 }
 
                                 Log.info(true, g_ZPrograms.Count.ToString() + " programs linked");
-                                if (g_ZPrograms.Count > 0) msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Default Program [" + conf.MainProgramDLL + "] has been loaded, " + programCount.ToString() + " plugin(s) loaded");
+                                //if (g_ZPrograms.Count > 0) msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Default Program [" + conf.MainProgramDLL + "] has been loaded, " + programCount.ToString() + " plugin(s) loaded");
                                 registry.LocateCommands();
 
-                                msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Commands found: " + registry.Cmds.Count.ToString());
+                                //msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Commands found: " + registry.Cmds.Count.ToString());
 
                                 GroupsCache = new Dictionary<UUID, Group>();
                                 ReloadGroupsCache();

@@ -6,7 +6,7 @@ using System.Reflection;
 [assembly: AssemblyCompany("ZNI")]
 [assembly: AssemblyAlgorithmId(System.Configuration.Assemblies.AssemblyHashAlgorithm.MD5)]
 [assembly: AssemblyCopyright("© 2020 Tara Piccari")]
-[assembly: AssemblyFileVersion("5.724")]
+[assembly: AssemblyFileVersion("5.819")]
 [assembly: AssemblyDescription("Second Life Bot - BotCore5")]
 
 
