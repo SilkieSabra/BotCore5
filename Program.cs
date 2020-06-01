@@ -19,7 +19,7 @@ namespace Bot
     public class Program
     {
         public static Logger Log;
-        public static double BotVer = ASMInfo.BotVer;
+        public static string BotVer = ASMInfo.BotVer;
         public static string BotStr = ASMInfo.BotName; // internal identifier for linden
         public static MainConfiguration conf;
         public static string Flavor = "Bot"; // inworld identification - must be customized
@@ -52,6 +52,7 @@ namespace Bot
             Console.WriteLine("Setting up Main Configuration");
             Log = new Logger("BotCore5");
             BotSession.Instance.Logger = Log;
+            BotSession.Instance.LaunchTime = DateTime.Now;
             ZHash.Instance.NewKey();
             ZHash.Instance.Key = "Test";
             Console.WriteLine("ZHash (Test): " + ZHash.Instance.Key);
@@ -450,6 +451,8 @@ namespace Bot
                         plugin.getTick(); // Trigger a tick event!!!
                     }
 
+                    
+
                     string jsonReply = MH.CheckActions();
 
 
@@ -547,7 +550,21 @@ namespace Bot
                     if (startupSeq) startupSeq = false;
 
 
-
+                    if(BotSession.Instance.LaunchTime.AddHours(MainConfiguration.Instance.AutoRelogAfterHours) < DateTime.Now)
+                    {
+                        // Initiate a relog
+                        try
+                        {
+                            prompter.Interrupt();
+                            prompter.Abort();
+                        }catch(Exception e)
+                        {
+                            client.Self.Chat(e.Message, 0, ChatType.Normal);
+                        }
+                        client.Self.Chat("Automatic relog in progress", 0, ChatType.Whisper);
+                        g_iIsRunning = false;
+                        client.Network.Logout();
+                    }
                     //if (MasterObjectCaches.RegionPrims.Count == 0 && client.Network.Connected)
                     //{
 

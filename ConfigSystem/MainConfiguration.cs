@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using OpenMetaverse;
+using Newtonsoft.Json;
 
 namespace Bot
 {
@@ -54,6 +55,9 @@ namespace Bot
         public string ActivationCode { get; set; } = "";
 
         public string GitPassword { get; set; } = "NOT_SET";
+
+        [JsonProperty(PropertyName = "RelogAfter")]
+        public double AutoRelogAfterHours = 12;
 
         public int WebServerPort { get; set; } = 35591;
 

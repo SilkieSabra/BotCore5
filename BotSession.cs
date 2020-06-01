@@ -43,5 +43,8 @@ namespace Bot
                 return MainConfiguration.Instance;
             } 
         }
+
+
+        public DateTime LaunchTime { get; set; } = DateTime.Now;
     }
 }
