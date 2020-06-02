@@ -24,14 +24,26 @@ namespace Bot.NonCommands
                             NotCommand[] nc = (NotCommand[])mi.GetCustomAttributes(typeof(NotCommand), false);
                             if (nc.Length>0)
                             {
-                                ThreadStart work = delegate
+                                bool OK = false;
+                                foreach(NotCommand nx in nc)
+                                {
+                                    if (nx.SourceType.HasFlag(sourceLoc))
+                                    {
+                                        OK = true;
+                                    }
+                                }
+                                if (OK)
                                 {
 
+                                    ThreadStart work = delegate
+                                    {
 
-                                    mi.Invoke(Activator.CreateInstance(mi.DeclaringType), new object[] { request, agentKey, agentName, sourceLoc, originator });
-                                };
-                                Thread T = new Thread(work);
-                                T.Start();
+
+                                        mi.Invoke(Activator.CreateInstance(mi.DeclaringType), new object[] { request, agentKey, agentName, sourceLoc, originator });
+                                    };
+                                    Thread T = new Thread(work);
+                                    T.Start();
+                                }
 
                             }
                         }
