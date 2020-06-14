@@ -22,7 +22,7 @@ namespace Bot.CommandSystem
         public GridClient cl;
         public Logger Log = BotSession.Instance.Logger;
         public string newReply;
-        public bool RunChatCommand(string cmdData, GridClient client, MessageHandler.MessageHandleEvent MHE, CommandRegistry registry)
+        public unsafe bool RunChatCommand(string cmdData, GridClient client, MessageHandler.MessageHandleEvent MHE, CommandRegistry registry)
         {
             register = registry;
             Dictionary<UUID, int> BotAdmins = MainConfiguration.Instance.BotAdmins;
@@ -152,7 +152,10 @@ namespace Bot.CommandSystem
             {
                 string Msg = e.Message;
                 Msg = Msg.Replace("ZNI", "");
-                MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Exception caught in OpenCollarBot.dll: [" + Msg + "]\n \n[STACK] " + e.StackTrace.Replace("ZNI", ""));
+                int i;
+                int* ptr = &i;
+                IntPtr addr = (IntPtr)ptr;
+                MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Exception caught: [" + Msg + "]\n \n[STACK] " + e.StackTrace.Replace("ZNI", "")+"\nMemory Position: 0x"+addr.ToString("x")+"\nCommand: "+request+$"\nMisc Details: {fromID}, {userLevel}, {sourceLoc}, {agentKey}, {agentName}");
                 // do nothing here. 
             }
             Log.info(log:"Leaving command parser");
