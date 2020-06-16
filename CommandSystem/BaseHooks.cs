@@ -136,7 +136,7 @@ namespace Bot.CommandSystem
         [CommandGroup("bot.help", 0, 0, "Alias to !help", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP)]
         public void PrintAllHelp(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
         {
-            MHE(source, client, "All commands viewable at: https://zontreck.dev:35591/help");
+            MHE(source, client, $"All commands viewable at: https://{MainConfiguration.Instance.WebServerIP}:{MainConfiguration.Instance.WebServerPort}/help");
         }
         // !help "command"
         [CommandGroup("help", 0, 1, "Prints help for one command", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP | MessageHandler.Destinations.DEST_CONSOLE_INFO)]

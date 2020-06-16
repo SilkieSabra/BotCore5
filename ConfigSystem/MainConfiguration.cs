@@ -60,6 +60,7 @@ namespace Bot
         public double AutoRelogAfterHours = 12;
 
         public int WebServerPort { get; set; } = 35591;
+        public string WebServerIP { get; set; } = "zontreck.dev";
 
         public Dictionary<UUID, int> BotAdmins { get; set; } = new Dictionary<UUID, int>();
 
