@@ -62,6 +62,8 @@ namespace Bot
         public int WebServerPort { get; set; } = 35591;
         public string WebServerIP { get; set; } = "zontreck.dev";
 
+        public bool UseSSL { get; set; } = false;
+
         public Dictionary<UUID, int> BotAdmins { get; set; } = new Dictionary<UUID, int>();
 
         public List<string> AuthedGithubUsers { get; set; } = new List<string>();

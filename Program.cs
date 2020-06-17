@@ -277,7 +277,7 @@ namespace Bot
                 prompter.Start();
                 CM = new CommandManager(BotSession.Instance.Logger, client, MH.callbacks);
 
-
+                MainConfiguration.Instance.Save(); // Flush the config, to update the file format
 
                 while (g_iIsRunning)
                 {
@@ -576,6 +576,12 @@ namespace Bot
                 client.Network.Logout();
             }
             while (client.Network.Connected) { }
+
+            if (BotSession.Instance.WaitForFiveMinutes)
+            {
+                AutoResetEvent are = new AutoResetEvent(false);
+                are.WaitOne(TimeSpan.FromMinutes(5));
+            }
             Environment.Exit(0);
 
             //System.Console.WriteLine("PAUSING. PRESS ANY KEY TO EXIT");

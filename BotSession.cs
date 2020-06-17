@@ -46,5 +46,6 @@ namespace Bot
 
 
         public DateTime LaunchTime { get; set; } = DateTime.Now;
+        public bool WaitForFiveMinutes = false;
     }
 }

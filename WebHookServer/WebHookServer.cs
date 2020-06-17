@@ -59,7 +59,10 @@ namespace Bot.WebHookServer
             {
                 listener = new HttpListener();
                 MHEx = MH.callbacks;
-                listener.Prefixes.Add($"https://*:{MainConfiguration.Instance.WebServerPort}/");
+                if (MainConfiguration.Instance.UseSSL)
+                    listener.Prefixes.Add($"https://*:{MainConfiguration.Instance.WebServerPort}/");
+                else
+                    listener.Prefixes.Add($"http://*:{MainConfiguration.Instance.WebServerPort}/");
                 
                 listener.Start();
                 var hc = new HookCmds();
