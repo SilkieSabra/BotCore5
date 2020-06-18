@@ -17,6 +17,8 @@ using System.IO;
 using System.Net.Http;
 using System.Net;
 using Newtonsoft.Json;
+using System.Security.Cryptography.X509Certificates;
+using System.Reflection;
 
 namespace Bot.WebHookServer
 {
@@ -58,11 +60,25 @@ namespace Bot.WebHookServer
             try
             {
                 listener = new HttpListener();
-                MHEx = MH.callbacks;
+
                 if (MainConfiguration.Instance.UseSSL)
+                {
+
+                    X509Certificate cert = new X509Certificate2(MainConfiguration.Instance.SSLCertificatePFX, MainConfiguration.Instance.SSLCertificatePWD);
+
+                    Type hepmType = Type.GetType("System.Net.HttpEndPointManager, System.Net.HttpListener");
+                    Type heplType = Type.GetType("System.Net.HttpEndPointListener, System.Net.HttpListener");
+                    MethodInfo getEPListener = hepmType.GetMethod("GetEPListener", BindingFlags.Static | BindingFlags.NonPublic);
+                    FieldInfo heplCert = heplType.GetField("_cert", BindingFlags.NonPublic | BindingFlags.Instance);
+                    object epl = getEPListener.Invoke(null, new object[] { "+", MainConfiguration.Instance.WebServerPort, listener, true });
+                    heplCert.SetValue(epl, cert);
                     listener.Prefixes.Add($"https://*:{MainConfiguration.Instance.WebServerPort}/");
+                }
                 else
                     listener.Prefixes.Add($"http://*:{MainConfiguration.Instance.WebServerPort}/");
+
+
+                MHEx = MH.callbacks;
                 
                 listener.Start();
                 var hc = new HookCmds();

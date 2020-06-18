@@ -63,6 +63,8 @@ namespace Bot
         public string WebServerIP { get; set; } = "zontreck.dev";
 
         public bool UseSSL { get; set; } = false;
+        public string SSLCertificatePFX { get; set; } = "certificate.pfx";
+        public string SSLCertificatePWD { get; set; } = "";
 
         public Dictionary<UUID, int> BotAdmins { get; set; } = new Dictionary<UUID, int>();
 
