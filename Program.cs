@@ -355,7 +355,7 @@ namespace Bot
                         SM.Write<MainConfiguration>("Main", conf);
 
                     }
-                    if (File.Exists(conf.MainProgramDLL) == false)
+                    if (File.Exists(conf.MainProgramDLL) == false && startupSeq)
                     {
                         Log.info(true, "MainProgram Library: " + conf.MainProgramDLL + " does not exist");
 
