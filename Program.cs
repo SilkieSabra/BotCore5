@@ -21,7 +21,6 @@ namespace Bot
         public static Logger Log;
         public static string BotVer = ASMInfo.BotVer;
         public static string BotStr = ASMInfo.BotName; // internal identifier for linden
-        public static MainConfiguration conf;
         public static string Flavor = "Bot"; // inworld identification - must be customized
         public static SerialManager SM = new SerialManager();
         public static string DefaultProgram = ""; // no default. 
@@ -56,8 +55,8 @@ namespace Bot
             ZHash.Instance.NewKey();
             ZHash.Instance.Key = "Test";
             Console.WriteLine("ZHash (Test): " + ZHash.Instance.Key);
-            conf = MainConfiguration.Instance;
-            conf.Load();
+            MainConfiguration.Instance.Load();
+            MainConfiguration conf = MainConfiguration.Instance;
             //MasterObjectCaches = ObjectCaches.Instance;
 
 
@@ -66,14 +65,14 @@ namespace Bot
                 // Check if this is activation command
                 if (args[0] == "-a")
                 {
-                    conf.ActivationCode = args[1];
-                    conf.Save();
+                    MainConfiguration.Instance.ActivationCode = args[1];
+                    MainConfiguration.Instance.Save();
                     return;
                 }
                 else if (args[0] == "-m")
                 {
-                    conf.MainProgramDLL = args[1];
-                    conf.Save();
+                    MainConfiguration.Instance.MainProgramDLL = args[1];
+                    MainConfiguration.Instance.Save();
                     return;
                 }
             }
@@ -81,10 +80,10 @@ namespace Bot
             {
                 if (args[0] == "-l")
                 {
-                    conf.first = args[1];
-                    conf.last = args[2];
-                    conf.password = args[3];
-                    conf.Save();
+                    MainConfiguration.Instance.first = args[1];
+                    MainConfiguration.Instance.last = args[2];
+                    MainConfiguration.Instance.password = args[3];
+                    MainConfiguration.Instance.Save();
                     return;
                 }
             }
