@@ -46,7 +46,7 @@ namespace Bot
             get; set;
         }
 
-        public string MainProgramDLL = "BlankBot.dll";
+        public string MainProgramDLL = "";
         public string first { get; set; } = "";
         public string last { get; set; } = "";
         public string password { get; set; } = "";
