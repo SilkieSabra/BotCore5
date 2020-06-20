@@ -24,7 +24,7 @@ namespace Bot
         public static MainConfiguration conf;
         public static string Flavor = "Bot"; // inworld identification - must be customized
         public static SerialManager SM = new SerialManager();
-        public static string DefaultProgram = "BlankBot.dll"; // default bot - blank will only contain the commands to switch programs. It is a complete blank!
+        public static string DefaultProgram = ""; // no default. 
         public static GridClient client = new GridClient();
         public static bool g_iIsRunning = true;
         public static MessageHandler MH;
@@ -350,7 +350,7 @@ namespace Bot
                     // Check MainConfiguration for a mainProgram handle
                     if (conf.MainProgramDLL == null)
                     {
-                        Log.info(true, "Setting main program library");
+                        Log.info(true, "Setting main program library to none");
                         conf.MainProgramDLL = DefaultProgram;
                         SM.Write<MainConfiguration>("Main", conf);
 
@@ -358,13 +358,17 @@ namespace Bot
                     if (File.Exists(conf.MainProgramDLL) == false)
                     {
                         Log.info(true, "MainProgram Library: " + conf.MainProgramDLL + " does not exist");
-                        if (conf.MainProgramDLL == DefaultProgram)
-                        {
-                            Log.info(true, "FATAL: BlankBot.dll must exist to proceed");
-                            msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "BlankBot.dll does not exist. Please place the blank bot program into the same folder as 'Bot.dll'. Load cannot proceed any further Terminating");
 
-                        }
-                        g_iIsRunning = false;
+                        startupSeq = false;
+                        g_ZPrograms = new List<IProgram>();
+
+                        registry = CommandRegistry.Instance;
+                        registry.LocateCommands();
+
+                        //msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Commands found: " + registry.Cmds.Count.ToString());
+
+                        GroupsCache = new Dictionary<UUID, Group>();
+                        ReloadGroupsCache();
                     }
                     else
                     {
