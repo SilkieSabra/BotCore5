@@ -352,11 +352,7 @@ namespace Bot
                     client.Self.RetrieveInstantMessages();
                     if (client.Network.Connected == false) g_iIsRunning = false; // Quit the program and restart immediately!
                     Thread.Sleep(2000);
-                    DirectoryInfo lp = new DirectoryInfo("update");
 
-
-
-                    if (lp.Exists) g_iIsRunning = false;
 
                     if (conf.ConfigFor == "Main")
                     {
@@ -384,18 +380,15 @@ namespace Bot
                         Flavor = conf.ConfigFor;
                     }
 
-
-                    registry = CommandRegistry.Instance;
-                    registry.LocateCommands();
-
                     //msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Commands found: " + registry.Cmds.Count.ToString());
 
-                    GroupsCache = new Dictionary<UUID, Group>();
-                    ReloadGroupsCache();
 
                     if (startupSeq)
                     {
                         registry = CommandRegistry.Instance;
+                        registry.LocateCommands();
+                        GroupsCache = new Dictionary<UUID, Group>();
+                        ReloadGroupsCache();
                         //ReloadGroupsCache();
                         try
                         {
