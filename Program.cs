@@ -290,9 +290,13 @@ namespace Bot
                             {
                                 try
                                 {
-                                    Console.WriteLine("Plugin [" + prog.ProgramName + "] found (" + fi.FullName + ") loaded and activated");
-                                    prog.run(client, MH, CommandRegistry.Instance);
-                                    g_ZPrograms.Add(prog);
+                                    if (!g_ZPrograms.Contains(prog))
+                                    {
+
+                                        Console.WriteLine("Plugin [" + prog.ProgramName + "] found (" + fi.FullName + ") loaded and activated");
+                                        prog.run(client, MH, CommandRegistry.Instance);
+                                        g_ZPrograms.Add(prog);
+                                    }
                                 }
                                 catch (Exception e) { }
                             }
@@ -307,9 +311,13 @@ namespace Bot
                 {
                     try
                     {
-                        Console.WriteLine("Plugin [" + prog.ProgramName + "] found (" + Assembly.GetExecutingAssembly().FullName + ") loaded and activated");
-                        prog.run(client, MH, CommandRegistry.Instance);
-                        g_ZPrograms.Add(prog);
+                        if (!g_ZPrograms.Contains(prog))
+                        {
+
+                            Console.WriteLine("Plugin [" + prog.ProgramName + "] found (" + Assembly.GetExecutingAssembly().FullName + ") loaded and activated");
+                            prog.run(client, MH, CommandRegistry.Instance);
+                            g_ZPrograms.Add(prog);
+                        }
                     }
                     catch (Exception e) { }
                 }
