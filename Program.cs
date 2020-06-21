@@ -48,6 +48,9 @@ namespace Bot
 
         public static unsafe void Main(string[] args)
         {
+            if (File.Exists("Bot.lockfile")) Environment.Exit(0);
+
+            File.WriteAllText("Bot.lockfile", "1");
             Console.WriteLine("Setting up Main Configuration");
             Log = new Logger("BotCore5");
             BotSession.Instance.Logger = Log;
