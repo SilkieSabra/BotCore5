@@ -23,7 +23,6 @@ namespace Bot
         public static string BotStr = ASMInfo.BotName; // internal identifier for linden
         public static string Flavor = "Bot"; // inworld identification - must be customized
         public static SerialManager SM = new SerialManager();
-        public static string DefaultProgram = ""; // no default. 
         public static GridClient client = new GridClient();
         public static bool g_iIsRunning = true;
         public static MessageHandler MH;
@@ -69,12 +68,6 @@ namespace Bot
                 if (args[0] == "-a")
                 {
                     MainConfiguration.Instance.ActivationCode = args[1];
-                    MainConfiguration.Instance.Save();
-                    return;
-                }
-                else if (args[0] == "-m")
-                {
-                    MainConfiguration.Instance.MainProgramDLL = args[1];
                     MainConfiguration.Instance.Save();
                     return;
                 }
@@ -186,7 +179,6 @@ namespace Bot
                     Log.info(false, "Now enter your password: ");
                     pwd = Console.ReadLine();
 
-                    conf.MainProgramDLL = DefaultProgram;
                     conf.ConfigFor = "ZBotCore";
                     conf.ConfigVersion = 1.0f;
 
@@ -384,61 +376,44 @@ namespace Bot
                         Flavor = conf.ConfigFor;
                     }
 
-                    // Check MainConfiguration for a mainProgram handle
-                    if (conf.MainProgramDLL == null)
+
+                    registry = CommandRegistry.Instance;
+                    registry.LocateCommands();
+
+                    //msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Commands found: " + registry.Cmds.Count.ToString());
+
+                    GroupsCache = new Dictionary<UUID, Group>();
+                    ReloadGroupsCache();
+
+                    if (startupSeq)
                     {
-                        Log.info(true, "Setting main program library to none");
-                        conf.MainProgramDLL = DefaultProgram;
-                        SM.Write<MainConfiguration>("Main", conf);
-
-                    }
-                    if (File.Exists(conf.MainProgramDLL) == false && startupSeq)
-                    {
-                        Log.info(true, "MainProgram Library: " + conf.MainProgramDLL + " does not exist");
-
-                        startupSeq = false;
-
                         registry = CommandRegistry.Instance;
-                        registry.LocateCommands();
-
-                        //msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Commands found: " + registry.Cmds.Count.ToString());
-
-                        GroupsCache = new Dictionary<UUID, Group>();
-                        ReloadGroupsCache();
-                    }
-                    else
-                    {
-                        if (startupSeq)
+                        //ReloadGroupsCache();
+                        try
                         {
-                            registry = CommandRegistry.Instance;
-                            //ReloadGroupsCache();
-                            try
-                            {
 
-                                Log.info(true, g_ZPrograms.Count.ToString() + " programs linked");
-                                //if (g_ZPrograms.Count > 0) msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Default Program [" + conf.MainProgramDLL + "] has been loaded, " + programCount.ToString() + " plugin(s) loaded");
-                                registry.LocateCommands();
+                            Log.info(true, g_ZPrograms.Count.ToString() + " programs linked");
+                            //if (g_ZPrograms.Count > 0) msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Default Program [" + conf.MainProgramDLL + "] has been loaded, " + programCount.ToString() + " plugin(s) loaded");
+                            registry.LocateCommands();
 
-                                //msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Commands found: " + registry.Cmds.Count.ToString());
+                            //msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Commands found: " + registry.Cmds.Count.ToString());
 
-                                GroupsCache = new Dictionary<UUID, Group>();
-                                ReloadGroupsCache();
-                            }
-                            catch (Exception E)
-                            {
-                                string Msg = E.Message;
-                                string STACK = E.StackTrace.Replace("ZNI", "");
-                                Msg = Msg.Replace("ZNI", "");
-                                Log.info(true, "Generic Exception Caught: " + Msg + " [0x0A]");
-                                int i;
-                                int* ptr = &i;
-                                IntPtr addr = (IntPtr)ptr;
-                                msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Generic Exception Caught: " + Msg + " [0x0A, 0x" + addr.ToString("x") + "]\nSTACK: " + STACK);
-                            }
+                            GroupsCache = new Dictionary<UUID, Group>();
+                            ReloadGroupsCache();
                         }
-
-
+                        catch (Exception E)
+                        {
+                            string Msg = E.Message;
+                            string STACK = E.StackTrace.Replace("ZNI", "");
+                            Msg = Msg.Replace("ZNI", "");
+                            Log.info(true, "Generic Exception Caught: " + Msg + " [0x0A]");
+                            int i;
+                            int* ptr = &i;
+                            IntPtr addr = (IntPtr)ptr;
+                            msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Generic Exception Caught: " + Msg + " [0x0A, 0x" + addr.ToString("x") + "]\nSTACK: " + STACK);
+                        }
                     }
+
                     foreach (IProgram plugin in g_ZPrograms)
                     {
                         plugin.getTick(); // Trigger a tick event!!!

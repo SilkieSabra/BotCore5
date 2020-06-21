@@ -46,7 +46,6 @@ namespace Bot
             get; set;
         }
 
-        public string MainProgramDLL = "";
         public string first { get; set; } = "";
         public string last { get; set; } = "";
         public string password { get; set; } = "";
@@ -69,7 +68,6 @@ namespace Bot
         public Dictionary<UUID, int> BotAdmins { get; set; } = new Dictionary<UUID, int>();
 
         public List<string> AuthedGithubUsers { get; set; } = new List<string>();
-        public List<string> LinkedDLLs { get; set; } = new List<string>();
 
         public bool Authed(string GHLogin)
         {
