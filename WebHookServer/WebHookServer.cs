@@ -57,6 +57,7 @@ namespace Bot.WebHookServer
         }
         public void run(GridClient client, MessageHandler MH, CommandRegistry registry)
         {
+            if (listener != null) return;// Already had run triggered
             try
             {
                 listener = new HttpListener();

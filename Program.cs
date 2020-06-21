@@ -306,21 +306,6 @@ namespace Bot
                         Console.WriteLine("Could not load file: " + fi.FullName+" as a Bot Plugin");
                     }
                 }
-                List<IProgram> main = new PluginActivator().Activate(Assembly.GetExecutingAssembly());
-                foreach (IProgram prog in main)
-                {
-                    try
-                    {
-                        if (!g_ZPrograms.Contains(prog))
-                        {
-
-                            Console.WriteLine("Plugin [" + prog.ProgramName + "] found (" + Assembly.GetExecutingAssembly().FullName + ") loaded and activated");
-                            prog.run(client, MH, CommandRegistry.Instance);
-                            g_ZPrograms.Add(prog);
-                        }
-                    }
-                    catch (Exception e) { }
-                }
 
                 CommandRegistry.Instance.LocateCommands();
 
