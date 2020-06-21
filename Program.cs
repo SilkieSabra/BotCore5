@@ -61,7 +61,7 @@ namespace Bot
             MainConfiguration.Instance.Load();
             MainConfiguration conf = MainConfiguration.Instance;
             //MasterObjectCaches = ObjectCaches.Instance;
-
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 
             if (args.Length == 2)
             {
@@ -592,6 +592,12 @@ namespace Bot
 
             //System.Console.WriteLine("PAUSING. PRESS ANY KEY TO EXIT");
             //System.Console.ReadKey();
+        }
+
+        private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            // Exit the process
+            if (File.Exists("Bot.lockfile")) File.Delete("Bot.lockfile");
         }
 
         private static void onJoinGroupChat(object sender, GroupChatJoinedEventArgs e)
