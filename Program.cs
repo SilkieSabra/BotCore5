@@ -278,20 +278,28 @@ namespace Bot
                 FileInfo[] files = new DirectoryInfo(Directory.GetCurrentDirectory()).GetFiles();
                 foreach(FileInfo fi in files)
                 {
-                    if(fi.Extension.ToLower() == ".dll")
+                    try
                     {
-                        PluginActivator PA = new PluginActivator();
-                        Assembly asm = PA.LoadLibrary(fi.FullName);
-                        List<IProgram> plugins = PA.Activate(asm);
-                        foreach(IProgram prog in plugins)
+
+                        if (fi.Extension.ToLower() == ".dll")
                         {
-                            try
+                            PluginActivator PA = new PluginActivator();
+                            Assembly asm = PA.LoadLibrary(fi.FullName);
+                            List<IProgram> plugins = PA.Activate(asm);
+                            foreach (IProgram prog in plugins)
                             {
-                                Console.WriteLine("Plugin [" + prog.ProgramName + "] found (" + fi.FullName + ") loaded and activated");
-                                prog.run(client, MH, CommandRegistry.Instance);
-                                g_ZPrograms.Add(prog);
-                            }catch(Exception e) { }
+                                try
+                                {
+                                    Console.WriteLine("Plugin [" + prog.ProgramName + "] found (" + fi.FullName + ") loaded and activated");
+                                    prog.run(client, MH, CommandRegistry.Instance);
+                                    g_ZPrograms.Add(prog);
+                                }
+                                catch (Exception e) { }
+                            }
                         }
+                    }catch(Exception e)
+                    {
+                        Console.WriteLine("Could not load file: " + fi.FullName+" as a Bot Plugin");
                     }
                 }
                 List<IProgram> main = new PluginActivator().Activate(Assembly.GetExecutingAssembly());
