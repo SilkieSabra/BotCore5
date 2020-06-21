@@ -286,7 +286,7 @@ namespace Bot
                 FileInfo[] files = new DirectoryInfo(Directory.GetCurrentDirectory()).GetFiles();
                 foreach(FileInfo fi in files)
                 {
-                    if(fi.Extension.ToLower() == "dll")
+                    if(fi.Extension.ToLower() == ".dll")
                     {
                         PluginActivator PA = new PluginActivator();
                         Assembly asm = PA.LoadLibrary(fi.FullName);
