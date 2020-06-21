@@ -291,20 +291,28 @@ namespace Bot
                         PluginActivator PA = new PluginActivator();
                         Assembly asm = PA.LoadLibrary(fi.FullName);
                         List<IProgram> plugins = PA.Activate(asm);
-                        try
+                        foreach(IProgram prog in plugins)
                         {
-
-                            g_ZPrograms.AddRange(plugins);
-                        }catch(Exception e) { }
+                            try
+                            {
+                                Console.WriteLine("Plugin [" + prog.ProgramName + "] found (" + fi.FullName + ") loaded and activated");
+                                prog.run(client, MH, CommandRegistry.Instance);
+                                g_ZPrograms.Add(prog);
+                            }catch(Exception e) { }
+                        }
                     }
                 }
                 List<IProgram> main = new PluginActivator().Activate(Assembly.GetExecutingAssembly());
-                try
+                foreach (IProgram prog in main)
                 {
-
-                    g_ZPrograms.AddRange(main);
+                    try
+                    {
+                        Console.WriteLine("Plugin [" + prog.ProgramName + "] found (" + Assembly.GetExecutingAssembly().FullName + ") loaded and activated");
+                        prog.run(client, MH, CommandRegistry.Instance);
+                        g_ZPrograms.Add(prog);
+                    }
+                    catch (Exception e) { }
                 }
-                catch (Exception e) { }
 
                 CommandRegistry.Instance.LocateCommands();
 
@@ -406,17 +414,6 @@ namespace Bot
                             //ReloadGroupsCache();
                             try
                             {
-
-                                foreach (IProgram pluginKvp in g_ZPrograms)
-                                {
-                                    IProgram plugin = pluginKvp;
-                                    plugin.run(client, MH, registry); // simulate constructor and set up other things
-                                    client.Self.IM += plugin.onIMEvent;
-
-                                    Log.info(true, "Plugin: " + plugin.ProgramName + " activated");
-                                    if (File.Exists(plugin.ProgramName + ".json"))
-                                        plugin.LoadConfiguration(); // will throw an error if BlankBot tries to load config
-                                }
 
                                 Log.info(true, g_ZPrograms.Count.ToString() + " programs linked");
                                 //if (g_ZPrograms.Count > 0) msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Default Program [" + conf.MainProgramDLL + "] has been loaded, " + programCount.ToString() + " plugin(s) loaded");
