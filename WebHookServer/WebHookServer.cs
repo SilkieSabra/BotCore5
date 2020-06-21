@@ -86,10 +86,17 @@ namespace Bot.WebHookServer
 
                 listener.BeginGetContext(hc.OnWebHook, null);
 
+                AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+
             }catch(Exception e)
             {
                 BotSession.Instance.MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Error: Program could not escalate to Admin Privileges. WebHook engine not running\n\n"+e.Message+"\n"+e.StackTrace);
             }
+        }
+
+        private void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            listener.Stop();
         }
     }
 }
