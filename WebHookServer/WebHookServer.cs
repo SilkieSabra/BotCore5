@@ -88,7 +88,7 @@ namespace Bot.WebHookServer
 
             }catch(Exception e)
             {
-                BotSession.Instance.MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Error: Program could not escalate to Admin Privileges. WebHook engine not running");
+                BotSession.Instance.MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Error: Program could not escalate to Admin Privileges. WebHook engine not running\n\n"+e.Message+"\n"+e.StackTrace);
             }
         }
     }
