@@ -281,6 +281,33 @@ namespace Bot
 
                 MainConfiguration.Instance.Save(); // Flush the config, to update the file format
 
+                g_ZPrograms = new List<IProgram>();
+                // Scan folder for plugins, then load
+                FileInfo[] files = new DirectoryInfo(Directory.GetCurrentDirectory()).GetFiles();
+                foreach(FileInfo fi in files)
+                {
+                    if(fi.Extension.ToLower() == "dll")
+                    {
+                        PluginActivator PA = new PluginActivator();
+                        Assembly asm = PA.LoadLibrary(fi.FullName);
+                        List<IProgram> plugins = PA.Activate(asm);
+                        try
+                        {
+
+                            g_ZPrograms.AddRange(plugins);
+                        }catch(Exception e) { }
+                    }
+                }
+                List<IProgram> main = new PluginActivator().Activate(Assembly.GetExecutingAssembly());
+                try
+                {
+
+                    g_ZPrograms.AddRange(main);
+                }
+                catch (Exception e) { }
+
+                CommandRegistry.Instance.LocateCommands();
+
                 while (g_iIsRunning)
                 {
                     string consoleCmd = "N/A";
@@ -362,7 +389,6 @@ namespace Bot
                         Log.info(true, "MainProgram Library: " + conf.MainProgramDLL + " does not exist");
 
                         startupSeq = false;
-                        g_ZPrograms = new List<IProgram>();
 
                         registry = CommandRegistry.Instance;
                         registry.LocateCommands();
@@ -378,52 +404,16 @@ namespace Bot
                         {
                             registry = CommandRegistry.Instance;
                             //ReloadGroupsCache();
-                            Log.info(true, "MainProgram exists");
-                            Assembly _s = Assembly.GetExecutingAssembly();
                             try
                             {
-                                int programCount = 0;
-                                PluginActivator PA = new PluginActivator();
-                                Assembly MainProg = PA.LoadLibrary(conf.MainProgramDLL);
 
-                                Dictionary<IProgram, Assembly> plugins = new Dictionary<IProgram, Assembly>();
-                                List<IProgram> plg1 = PA.Activate(MainProg);
-                                List<IProgram> mainExe = PA.Activate(_s);
-
-                                foreach(string DLL in MainConfiguration.Instance.LinkedDLLs)
+                                foreach (IProgram pluginKvp in g_ZPrograms)
                                 {
-                                    Assembly DLLID = PA.LoadLibrary(DLL+".dll");
-                                    List<IProgram> progs = PA.Activate(DLLID);
-                                    int vx = 0;
-                                    foreach(IProgram prog in progs)
-                                    {
-                                        vx++;
-                                        plugins.Add(prog, DLLID);
-                                    }
-
-                                    //msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, $"Plugin loaded: {DLL}.dll, {vx} threads");
-                                    
-                                }
-
-                                foreach(IProgram plug in plg1)
-                                {
-                                    plugins.Add(plug, MainProg);
-                                }
-
-                                foreach(IProgram plug in mainExe)
-                                {
-                                    plugins.Add(plug, _s);
-                                }
-
-                                foreach (KeyValuePair<IProgram, Assembly> pluginKvp in plugins)
-                                {
-                                    IProgram plugin = pluginKvp.Key;
+                                    IProgram plugin = pluginKvp;
                                     plugin.run(client, MH, registry); // simulate constructor and set up other things
-                                    g_ZPrograms.Add(plugin);
                                     client.Self.IM += plugin.onIMEvent;
-                                    programCount++;
 
-                                    Log.info(true, "Plugin: " + plugin.ProgramName + " [" + pluginKvp.Value.FullName + "] added to g_ZPrograms");
+                                    Log.info(true, "Plugin: " + plugin.ProgramName + " activated");
                                     if (File.Exists(plugin.ProgramName + ".json"))
                                         plugin.LoadConfiguration(); // will throw an error if BlankBot tries to load config
                                 }
@@ -476,24 +466,6 @@ namespace Bot
                         string tp = jsonObj.type;
                         switch (tp)
                         {
-                            case "assignProgram":
-                                {
-
-                                    client.Self.Chat("Stand by", 0, ChatType.Normal);
-                                    string newProg = jsonObj.newProgram;
-                                    if (File.Exists(newProg + ".dll"))
-                                    {
-                                        conf.MainProgramDLL = jsonObj.newProgram + ".dll";
-                                        SM.Write<MainConfiguration>("Main", conf);
-                                        client.Self.Chat("Restarting bot using new main program", 0, ChatType.Normal);
-                                        g_iIsRunning = false;
-                                    }
-                                    else
-                                    {
-                                        client.Self.Chat("Error: Program '" + newProg + ".dll' does not exist.", 0, ChatType.Normal);
-                                    }
-                                    break;
-                                }
                             case "exit":
                                 {
 
@@ -504,42 +476,6 @@ namespace Bot
                             case "reload_groups":
                                 {
                                     ReloadGroupsCache();
-                                    break;
-                                }
-                            case "load_program":
-                                {
-                                    //msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Stand by.. loading secondary libraries");
-                                    string newProg = jsonObj.newProgram;
-                                    if (File.Exists(newProg + ".dll"))
-                                    {
-                                        newProg += ".dll";
-                                        PluginActivator Plugs = new PluginActivator();
-                                        Plugs.LoadLibrary(newProg);
-                                        List<IProgram> libs = Plugs.Activate(Plugs.LoadedASM);
-                                        int programCount = 0;
-                                        foreach (IProgram plugin in libs)
-                                        {
-
-
-                                            plugin.run(client, MH, registry); // simulate constructor and set up other things
-                                            g_ZPrograms.Add(plugin);
-                                            client.Self.IM += plugin.onIMEvent;
-                                            programCount++;
-                                            Log.info(true, "Plugin: " + plugin.ProgramName + " [" + Plugs.LoadedASM.FullName + "] added to g_ZPrograms");
-                                            if (File.Exists(plugin.ProgramName + ".json"))
-                                                plugin.LoadConfiguration(); // will throw an error if BlankBot tries to load config
-                                        }
-
-                                        msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Loaded plugin " + newProg + " with " + programCount.ToString() + " entry points");
-
-                                        registry.LocateCommands();
-
-                                        msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Commands found: " + registry.Cmds.Count.ToString());
-                                    }
-                                    else
-                                    {
-                                        msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "ERROR: " + newProg + " could not be located!");
-                                    }
                                     break;
                                 }
                             default:
@@ -680,41 +616,6 @@ namespace Bot
             */
         }
 
-        [CommandGroup("load_dll", 5, 1, "load_dll [DLL_Name] - Loads a DLL and searches for entry points", MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
-        public void load_DLL(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
-        {
-            // Load DLL
-            MainConfiguration cfg = MainConfiguration.Instance;
-
-            cfg.LinkedDLLs.Add(additionalArgs[0]);
-            Dictionary<string, string> cmd = new Dictionary<string, string>();
-            cmd.Add("type", "load_program");
-            cmd.Add("newProgram", additionalArgs[0]);
-            string strCmd = JsonConvert.SerializeObject(cmd);
-            MHE(MessageHandler.Destinations.DEST_ACTION, UUID.Zero, strCmd);
-
-            cfg.Save();
-        }
-
-
-        [CommandGroup("unload_dll", 5, 1, "unload_dll [DLL_Name] - Prevents DLL from reloading at next reboot", MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
-        public void unload_DLL(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
-        {
-            // Load DLL
-            MainConfiguration cfg = MainConfiguration.Instance;
-
-            cfg.LinkedDLLs.Remove(additionalArgs[0]);
-
-            MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "DLL marked for unload at next bot restart");
-
-            cfg.Save();
-        }
-
-        [CommandGroup("assign", 75, 1, "assign [DLL Name] - Sets the primary active DLL", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
-        public void SetActiveProgram(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
-        {
-            MHE(MessageHandler.Destinations.DEST_ACTION, UUID.Zero, "{\"type\":\"assignProgram\",\"newProgram\":\"" + additionalArgs[0] + "\"}");
-        }
         private ManualResetEvent profile_get = new ManualResetEvent(false);
         private Avatar.AvatarProperties Properties_AV;
         [CommandGroup("set_profile_text", 75, 1, "set_profile_text [text:Base64] - Sets the profile text", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_CONSOLE_INFO)]

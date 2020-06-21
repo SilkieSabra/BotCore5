@@ -132,8 +132,8 @@ namespace Bot.CommandSystem
             MHE(MessageHandler.Destinations.DEST_ACTION, UUID.Zero, "{'type':'exit'}");
         }
         // !!help
-        [CommandGroup("!help", 0, 0, "Prints the entire help registry", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
-        [CommandGroup("bot.help", 0, 0, "Alias to !help", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP)]
+        [CommandGroup("!help", 1, 0, "Prints the entire help registry", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
+        [CommandGroup("bot.help", 1, 0, "Alias to !help", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP)]
         public void PrintAllHelp(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
         {
             if (MainConfiguration.Instance.UseSSL)
