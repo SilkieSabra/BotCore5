@@ -51,6 +51,33 @@ namespace Bot
             catch (Exception e) { }
         }
 
+        public void WriteLogEntry(bool isLocal, bool isIM, string SenderName, UUID SenderID, string Message)
+        {
+            string filename = "";
+            if (isLocal) filename = DateTime.Now.ToString("M-d-yyyy")+"-LocalChat.log";
+            else  filename = DateTime.Now.ToString("M-d-yyyy") + "-"+SenderName + ".log";
+
+            string LogFormat = MainConfiguration.Instance.IMAndChatFormat;
+            LogFormat=LogFormat.Replace("%TIME%", DateTime.Now.ToString("hh:mm:ss"));
+            LogFormat = LogFormat.Replace("%NAME%", SenderName);
+            LogFormat = LogFormat.Replace("%MESSAGE%", Message);
+            LogFormat = LogFormat.Replace("%UUID%", SenderID.ToString());
+
+
+            try
+            {
+                lock (_writeLock)
+                {
+                    if (!Directory.Exists("GroupChatLogs")) Directory.CreateDirectory("GroupChatLogs");
+                    File.AppendAllText(filename, LogFormat + "\n");
+                }
+            }catch(Exception e)
+            {
+                Console.WriteLine("Could not write a log using overload1 (chat or IM)\nError code: " + e.Message + "\nStack: " + e.StackTrace);
+            }
+
+        }
+
         private static readonly object _fileRead = new object();
         [CommandGroupMaster("Logging")]
         [CommandGroup("search_log", 5, 2, "search_log [groupName] [search_term]  -  Searches for the search term in all logs relating to the group name (Use a underscore to show where spaces are!). The search term may also include the pipe (|) delimiter to include more than 1 word.", Bot.MessageHandler.Destinations.DEST_AGENT | Bot.MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP | MessageHandler.Destinations.DEST_DISCORD)]

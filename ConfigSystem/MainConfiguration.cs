@@ -65,6 +65,9 @@ namespace Bot
         public string SSLCertificatePFX { get; set; } = "certificate.pfx";
         public string SSLCertificatePWD { get; set; } = "";
 
+        public bool LogChatAndIMs { get; set; } = false;
+        public string IMAndChatFormat { get; set; } = "[%TIME%] (%NAME%): %MESSAGE%";
+
         public Dictionary<UUID, int> BotAdmins { get; set; } = new Dictionary<UUID, int>();
 
         public List<string> AuthedGithubUsers { get; set; } = new List<string>();

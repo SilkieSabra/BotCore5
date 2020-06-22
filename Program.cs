@@ -47,6 +47,7 @@ namespace Bot
 
         public static unsafe void Main(string[] args)
         {
+            Console.SetOut(new StreamWriter(new FileStream("Console.log", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite)));
             Console.WriteLine("Setting up Main Configuration");
             Log = new Logger("BotCore5");
             BotSession.Instance.Logger = Log;
@@ -57,7 +58,6 @@ namespace Bot
             MainConfiguration.Instance.Load();
             MainConfiguration conf = MainConfiguration.Instance;
             //MasterObjectCaches = ObjectCaches.Instance;
-            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 
             if (args.Length == 2)
             {
@@ -493,12 +493,6 @@ namespace Bot
             //System.Console.ReadKey();
         }
 
-        private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
-        {
-            // Exit the process
-            if (File.Exists("Bot.lockfile")) File.Delete("Bot.lockfile");
-        }
-
         private static void onJoinGroupChat(object sender, GroupChatJoinedEventArgs e)
         {
             if (e.Success)
@@ -817,7 +811,7 @@ namespace Bot
             newCache.GroupID = e.GroupID;
             newCache.Save(e.GroupID.ToString());
             RoleReply.Set();
-            FileInfo fi = new FileInfo("GroupCache/" + e.GroupID.ToString() + ".bdf");
+            FileInfo fi = new FileInfo("GroupCache/" + e.GroupID.ToString() + ".json");
 
             //MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "[debug] Roles for secondlife:///app/group/" + e.GroupID.ToString() + "/about have been saved to: GroupCache/" + e.GroupID.ToString() + ".bdf\nFileSize: "+fi.Length.ToString(), 55);
 

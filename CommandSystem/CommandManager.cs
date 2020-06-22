@@ -69,6 +69,15 @@ namespace Bot.CommandSystem
             else sourceLoc = MessageHandler.Destinations.DEST_LOCAL;
 
             string agentName = parameters.fromName;
+            if(sourceLoc == MessageHandler.Destinations.DEST_LOCAL)
+            {
+                GroupLog.Instance.WriteLogEntry(true, false, agentName, agentKey, request);
+            }else if (sourceLoc == MessageHandler.Destinations.DEST_AGENT)
+            {
+                GroupLog.Instance.WriteLogEntry(false, true, agentName, agentKey, request);
+            }
+
+
             if (sourceLoc == MessageHandler.Destinations.DEST_GROUP)
             {
                 agentKey = fromID;
