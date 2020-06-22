@@ -63,7 +63,7 @@ namespace Bot
             LogFormat = LogFormat.Replace("%MESSAGE%", Message);
             LogFormat = LogFormat.Replace("%UUID%", SenderID.ToString());
 
-
+            filename = "GroupChatLogs/" + filename;
             try
             {
                 lock (_writeLock)
