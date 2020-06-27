@@ -47,7 +47,6 @@ namespace Bot
 
         public static unsafe void Main(string[] args)
         {
-            Console.SetOut(new StreamWriter(new FileStream("Console.log", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite)));
             Console.WriteLine("Setting up Main Configuration");
             Log = new Logger("BotCore5");
             BotSession.Instance.Logger = Log;
