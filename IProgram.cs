@@ -9,7 +9,7 @@ namespace Bot
 {
     public interface IProgram
     {
-        void run(GridClient client, MessageHandler MH, CommandSystem.CommandRegistry registry); // Define the run command since a thread needs a entry point
+        void run(); // Define the run command since a thread needs a entry point
 
         string getTick(); // Run every second to check for queued data. If queue exists, then it will be returned as a JSON string.
         // getTick can reply with data for the serializer for instance.

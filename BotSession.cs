@@ -35,8 +35,6 @@ namespace Bot
 
         public GridClient grid { get; set; }
         public Logger Logger { get; set; }
-        public MessageHandler.MessageHandleEvent MHE;
-        public MessageHandler MH;
 
         public MainConfiguration ConfigurationHandle { 
             get {
@@ -47,5 +45,6 @@ namespace Bot
 
         public DateTime LaunchTime { get; set; } = DateTime.Now;
         public bool WaitForFiveMinutes = false;
+        public MessageService MSGSVC { get; set; } = new MessageService();
     }
 }

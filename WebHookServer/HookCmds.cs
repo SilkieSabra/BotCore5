@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Bot.WebHookServer
 {
-    class HookCmds
+    class HookCmds : BaseCommands
     {
 
         public HttpListener listener;
@@ -58,12 +58,13 @@ namespace Bot.WebHookServer
         }
 
 
-        [CommandGroup("webhook_auth", 4, 2, "webhook_auth [github_name] [y/n]", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP)]
-        public void WebHookAuthMgr(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
+        [CommandGroup("webhook_auth", 4, 2, "webhook_auth [github_name] [y/n]", Destinations.DEST_AGENT | Destinations.DEST_LOCAL | Destinations.DEST_GROUP)]
+        public void WebHookAuthMgr(UUID client, int level, string[] additionalArgs,  Destinations source, UUID agentKey, string agentName)
         {
             MainConfiguration cfg = MainConfiguration.Instance;
 
             MHE(source, client, "Checking..");
+            
 
             if (cfg.Authed(additionalArgs[0]))
             {

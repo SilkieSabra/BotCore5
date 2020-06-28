@@ -9,7 +9,7 @@ using System.Collections.Specialized;
 
 namespace Bot
 {
-    public sealed class GroupLog
+    public sealed class GroupLog : BaseCommands
     {
 
         private static readonly object _lock = new object();
@@ -80,10 +80,10 @@ namespace Bot
 
         private static readonly object _fileRead = new object();
         [CommandGroupMaster("Logging")]
-        [CommandGroup("search_log", 5, 2, "search_log [groupName] [search_term]  -  Searches for the search term in all logs relating to the group name (Use a underscore to show where spaces are!). The search term may also include the pipe (|) delimiter to include more than 1 word.", Bot.MessageHandler.Destinations.DEST_AGENT | Bot.MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP | MessageHandler.Destinations.DEST_DISCORD)]
-        public void search_log(UUID client, int level, GridClient grid, string[] additionalArgs,
-                                MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source,
-                                CommandRegistry registry, UUID agentKey, string agentName)
+        [CommandGroup("search_log", 5, 2, "search_log [groupName] [search_term]  -  Searches for the search term in all logs relating to the group name (Use a underscore to show where spaces are!). The search term may also include the pipe (|) delimiter to include more than 1 word.", Destinations.DEST_AGENT | Destinations.DEST_LOCAL | Destinations.DEST_GROUP | Destinations.DEST_DISCORD)]
+        public void search_log(UUID client, int level, string[] additionalArgs,
+                                Destinations source,
+                                UUID agentKey, string agentName)
         {
             string GrpName = additionalArgs[0].Replace('_', ' ');
             string[] search = additionalArgs[1].Split('|');

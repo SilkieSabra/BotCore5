@@ -37,7 +37,6 @@ namespace Bot.CommandSystem
                         _instance.client = bs.grid;
                         _instance.config = bs.ConfigurationHandle;
                         _instance.Log = bs.Logger;
-                        _instance.MHEx = bs.MHE;
                         _instance.LocateCommands();
                     }
                     return _instance;
@@ -59,7 +58,6 @@ namespace Bot.CommandSystem
         public GridClient client;
         public Logger Log;
         public IConfig config;
-        public MessageHandler.MessageHandleEvent MHEx;
         public void LocateCommands()
         {
             try
@@ -127,16 +125,17 @@ namespace Bot.CommandSystem
             }
             catch (ReflectionTypeLoadException e)
             {
-                MHEx(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "FAILURE!!!\n \n[Assembly load failure]");
+                MessageFactory.Post(Destinations.DEST_LOCAL, "FAILURE!!!\n\n[Assembly load failure]", UUID.Zero);
                 foreach (Exception X in e.LoaderExceptions)
                 {
-                    MHEx(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, X.Message + "\n \nSTACK: " + X.StackTrace);
+                    MessageFactory.Post(Destinations.DEST_LOCAL, X.Message + "\n \nSTACK: " + X.StackTrace, UUID.Zero);
+                    
                 }
             }
 
         }
 
-        public void PrintHelpAll(MessageHandler.Destinations dest, UUID uid)
+        public void PrintHelpAll(Destinations dest, UUID uid)
         {
 
             for (int i = 0; i < Cmds.Count; i++)
@@ -146,7 +145,7 @@ namespace Bot.CommandSystem
                 KeyValuePair<string, CommandGroup> kvp = Cmds.ElementAt(i);
 
                 CommandHelp HE = kvp.Value.cmdUsage;
-                if (dest == MessageHandler.Destinations.DEST_GROUP)
+                if (dest == Destinations.DEST_GROUP)
                 {
                     if (!HE.hasGroupFlag())
                     {
@@ -154,13 +153,14 @@ namespace Bot.CommandSystem
                     }
                     else
                     {
-                        MHEx(dest, uid, HE.GetUsage());
+                        MessageFactory.Post(dest, HE.GetUsage(), uid);
+                        
                     }
                 }
                 else
                 {
+                    MessageFactory.Post(dest, HE.GetUsage(), uid);
 
-                    MHEx(dest, uid, HE.GetUsage());
                 }
 
                 //                MHEx(dest, uid, kvp.Value.cmdUsage.GetUsage());
@@ -168,30 +168,31 @@ namespace Bot.CommandSystem
             }
         }
 
-        public void PrintHelp(MessageHandler.Destinations dest, string cmd, UUID uid)
+        public void PrintHelp(Destinations dest, string cmd, UUID uid)
         {
             try
             {
 
                 CommandHelp HE = Cmds[cmd].cmdUsage;
-                if (dest == MessageHandler.Destinations.DEST_GROUP)
+                if (dest == Destinations.DEST_GROUP)
                 {
                     if (!HE.hasGroupFlag())
                     {
                         //return; // DO NOT SCHEDULE THIS HELP INFO FOR GROUP!!!
                     }
                 }
-                MHEx(dest, uid, Cmds[cmd].cmdUsage.GetUsage());
+                MessageFactory.Post(dest, Cmds[cmd].cmdUsage.GetUsage(), uid);
+                
             }
             catch (Exception e)
             {
-                MHEx(dest, uid, "Error: Unrecognized command");
+                MessageFactory.Post(dest, "Error: Unknown command", uid);
+                
             }
         }
 
-        public void RunCommand(string cmdString, UUID user, int level, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, UUID agentKey, string agentName)
+        public void RunCommand(string cmdString, UUID user, int level, Destinations source, UUID agentKey, string agentName)
         {
-            MHEx = MHE;
             int pos = 0;
             string[] cmdStruct = cmdString.Split(' ');
             int IgnoreCount = 0;
@@ -213,11 +214,11 @@ namespace Bot.CommandSystem
                         {
                             // Check that the destination is allowed.
                             // If not then skip this command entirely
-                            MessageHandler.Destinations dests = cgX.CommandSource;
+                            Destinations dests = cgX.CommandSource;
                             bool Allowed = false;
-                            if ((dests & MessageHandler.Destinations.DEST_AGENT) == source) Allowed = true;
-                            if ((dests & MessageHandler.Destinations.DEST_GROUP) == source) Allowed = true;
-                            if ((dests & MessageHandler.Destinations.DEST_LOCAL) == source) Allowed = true;
+                            if ((dests & Destinations.DEST_AGENT) == source) Allowed = true;
+                            if ((dests & Destinations.DEST_GROUP) == source) Allowed = true;
+                            if ((dests & Destinations.DEST_LOCAL) == source) Allowed = true;
 
                             if (!Allowed)
                             {
@@ -235,10 +236,10 @@ namespace Bot.CommandSystem
                                     additionalArgs[i - 1] = cmdStruct[pos + i];
                                 }
                                 pos++;
-                                //(UUID client, int level, GridClient grid, string[] additionalArgs,
-                                //MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source,
-                                //CommandRegistry registry, UUID agentKey, string agentName)
-                                Thread CommandThread = new Thread(() => cgX.AssignedMethod.Invoke(ovj, new object[] { user, level, client, additionalArgs, MHE, source, this, agentKey, agentName }));
+                                //(UUID client, int level, string[] additionalArgs,
+                                //Destinations source,
+                                //UUID agentKey, string agentName)
+                                Thread CommandThread = new Thread(() => cgX.AssignedMethod.Invoke(ovj, new object[] { user, level, additionalArgs, source, agentKey, agentName }));
                                 CommandThread.Start();
                             }
                         }

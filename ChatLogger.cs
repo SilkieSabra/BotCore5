@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Bot
 {
-    public sealed class ChatLogger
+    public sealed class ChatLogger : BaseCommands
     {
         private static readonly object writelock = new object();
         private static ChatLogger inst = null;
@@ -42,8 +42,8 @@ namespace Bot
         /// <param name="registry"></param>
         /// <param name="agentKey"></param>
         /// <param name="agentName"></param>
-        [CommandGroup("log_chat", 5, 0, "log_chat - Toggles chat and IM logging", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
-        public void toggleChatLog(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
+        [CommandGroup("log_chat", 5, 0, "log_chat - Toggles chat and IM logging", Destinations.DEST_AGENT | Destinations.DEST_LOCAL )]
+        public void toggleChatLog(UUID client, int level, string[] additionalArgs, Destinations source, UUID agentKey, string agentName)
         {
             MHE(source, client, "Toggling");
 

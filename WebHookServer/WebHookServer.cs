@@ -25,7 +25,6 @@ namespace Bot.WebHookServer
     class GitServer : IProgram
     {
         public HttpListener listener;
-        public MessageHandler.MessageHandleEvent MHEx;
         public string ProgramName
         {
             get { return "GitServer"; }
@@ -33,7 +32,7 @@ namespace Bot.WebHookServer
 
         public float ProgramVersion
         {
-            get { return 1.6f; }
+            get { return 1.7f; }
         }
 
         public string getTick()
@@ -55,7 +54,7 @@ namespace Bot.WebHookServer
         public void onIMEvent(object sender, InstantMessageEventArgs e)
         {
         }
-        public void run(GridClient client, MessageHandler MH, CommandRegistry registry)
+        public void run()
         {
             if (listener != null) return;// Already had run triggered
             try
@@ -79,7 +78,6 @@ namespace Bot.WebHookServer
                     listener.Prefixes.Add($"http://*:{MainConfiguration.Instance.WebServerPort}/");
 
 
-                MHEx = MH.callbacks;
                 
                 listener.Start();
                 var hc = new HookCmds();
@@ -91,7 +89,8 @@ namespace Bot.WebHookServer
 
             }catch(Exception e)
             {
-                BotSession.Instance.MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Error: Program could not escalate to Admin Privileges. WebHook engine not running\n\n"+e.Message+"\n"+e.StackTrace);
+                MessageFactory.Post(Destinations.DEST_LOCAL, "Error: Program could not escalate to Admin Privileges. WebHook engine not running\n\n" + e.Message + "\n" + e.StackTrace, UUID.Zero);
+                
             }
         }
 

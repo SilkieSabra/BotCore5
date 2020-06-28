@@ -16,7 +16,7 @@ namespace Bot.CommandSystem
 
         public bool hasGroupFlag()
         {
-            if ((h.dests_allowed & MessageHandler.Destinations.DEST_GROUP) == MessageHandler.Destinations.DEST_GROUP) return true;
+            if ((h.dests_allowed & Destinations.DEST_GROUP) == Destinations.DEST_GROUP) return true;
             else return false;
         }
 
@@ -28,7 +28,7 @@ namespace Bot.CommandSystem
             public int args;
             public string Text;
             public string sources;
-            public MessageHandler.Destinations dests_allowed;
+            public Destinations dests_allowed;
         }
         public string GetUsage()
         {
@@ -39,14 +39,14 @@ namespace Bot.CommandSystem
         {
             return "Usage: " + h.Text;
         }
-        public CommandHelp(string CmdName, int minLevel, int argCount, string HelpText, MessageHandler.Destinations DESTS)
+        public CommandHelp(string CmdName, int minLevel, int argCount, string HelpText, Destinations DESTS)
         {
             h = new Help();
             string Applicable = "Command can be used in [";
-            if ((DESTS & MessageHandler.Destinations.DEST_LOCAL) == MessageHandler.Destinations.DEST_LOCAL) Applicable += "Local, ";
-            if ((DESTS & MessageHandler.Destinations.DEST_AGENT) == MessageHandler.Destinations.DEST_AGENT) Applicable += "IM, ";
-            if ((DESTS & MessageHandler.Destinations.DEST_GROUP) == MessageHandler.Destinations.DEST_GROUP) Applicable += "Group, ";
-            if ((DESTS & MessageHandler.Destinations.DEST_DISCORD) == MessageHandler.Destinations.DEST_DISCORD) Applicable += "Discord, ";
+            if ((DESTS & Destinations.DEST_LOCAL) == Destinations.DEST_LOCAL) Applicable += "Local, ";
+            if ((DESTS & Destinations.DEST_AGENT) == Destinations.DEST_AGENT) Applicable += "IM, ";
+            if ((DESTS & Destinations.DEST_GROUP) == Destinations.DEST_GROUP) Applicable += "Group, ";
+            if ((DESTS & Destinations.DEST_DISCORD) == Destinations.DEST_DISCORD) Applicable += "Discord, ";
 
             if (Applicable.Substring(Applicable.Length - 1, 1) == " ") Applicable = Applicable.Substring(0, Applicable.Length - 2) + "]";
 

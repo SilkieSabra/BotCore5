@@ -10,7 +10,7 @@ namespace Bot.NonCommands
 {
     public class nRegistry
     {
-        public static void Dispatch(string request, UUID agentKey, string agentName, MessageHandler.Destinations sourceLoc, UUID originator)
+        public static void Dispatch(string request, UUID agentKey, string agentName, Destinations sourceLoc, UUID originator)
         {
 
             foreach(Assembly a in AppDomain.CurrentDomain.GetAssemblies())

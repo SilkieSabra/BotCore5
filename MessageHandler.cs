@@ -11,7 +11,178 @@ using System.Threading;
 
 namespace Bot
 {
-    public class MessageHandler
+    /// <summary>
+    /// Message stuff!
+    /// </summary>
+    [Flags]
+    public enum Destinations
+    {
+        DEST_AGENT = 1,
+        DEST_GROUP = 2,
+        DEST_LOCAL = 4,
+        //DEST_CONSOLE_INFO = 8,
+        //DEST_ACTION = 16, // DEPRECATED
+        DEST_DISCORD = 32
+    };
+    /// <summary>
+    /// Message stuffs
+    /// </summary>
+    public abstract class Message
+    {
+        public abstract Destinations GetMessageSource();
+        public abstract string GetMessage();
+        public abstract UUID GetSender();
+        public abstract UUID GetTarget();
+        public abstract string GetSenderName();
+        public abstract int GetChannel();
+        internal abstract void set(Destinations dest, string msg, UUID agentID,string senderName, int channel);
+    }
+    /// <summary>
+    /// IM, local, whatever
+    /// </summary>
+    public class ChatMessage : Message
+    {
+        private string Msg;
+        private Destinations dest;
+        private UUID sender;
+        private UUID target;
+        private string senderName;
+        private int Chn;
+
+        public override UUID GetTarget()
+        {
+            return target;
+        }
+
+        public override int GetChannel()
+        {
+            return Chn;
+        }
+
+        public override string GetMessage()
+        {
+            return Msg;
+        }
+
+        public override Destinations GetMessageSource()
+        {
+            return dest;
+        }
+
+        public override UUID GetSender()
+        {
+            return sender;
+        }
+
+        public override string GetSenderName()
+        {
+            return senderName;
+        }
+
+        internal override void set(Destinations dest, string msg, UUID agentID,string senderName, int channel)
+        {
+            this.dest = dest;
+            Msg = msg;
+            sender = agentID;
+            this.senderName = senderName;
+            Chn = channel;
+        }
+
+        public ChatMessage(UUID targetID)
+        {
+            target = targetID;
+        }
+    }
+    /// <summary>
+    /// Includes methods specific to the Group
+    /// </summary>
+    public class GroupMessage : ChatMessage
+    {
+        private UUID GroupID;
+        private string groupName;
+        public UUID GetGroupID()
+        {
+            return GroupID;
+        }
+        public string GetGroupName()
+        {
+            return groupName;
+        }
+        public GroupMessage(UUID ID) : base(ID)
+        {
+            GroupID = ID;
+        }
+    }
+
+
+    public class MessageFactory
+    {
+
+        public static void Post(Destinations dest, string Msg, UUID destID, int chn = 0)
+        {
+
+            Message m = null;
+
+            switch (dest)
+            {
+                case Destinations.DEST_GROUP:
+                    m = new GroupMessage(destID);
+                    break;
+                case Destinations.DEST_DISCORD:
+                    m = new ChatMessage(UUID.Zero);
+                    break;
+                default:
+                    m = new ChatMessage(destID);
+                    break;
+            }
+
+            m.set(dest, Msg, BotSession.Instance.grid.Self.AgentID, BotSession.Instance.grid.Self.Name, chn);
+
+            MessageService.Dispatch(m);
+        }
+    }
+
+
+    /// <summary>
+    /// Basic messaging factory
+    /// </summary>
+    public class MessageService
+    {
+        public MessageService()
+        {
+
+        }
+
+        public static void Dispatch(Message M)
+        {
+            MessageEventArgs MEA = new MessageEventArgs();
+            MEA.Timestamp = DateTime.Now;
+            MEA.Msg = M;
+
+            BotSession.Instance.MSGSVC.OnMessageEvent(MEA);
+        }
+
+        protected virtual void OnMessageEvent(MessageEventArgs e)
+        {
+            EventHandler<MessageEventArgs> handler = MessageEvent;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+        public event EventHandler<MessageEventArgs> MessageEvent;
+    }
+
+
+    public class MessageEventArgs : EventArgs
+    {
+        public DateTime Timestamp { get; set; }
+        public Message Msg { get; set; }
+    }
+
+
+
+    public class MessageHandler_old // keep the old structure for now
     {
         private List<MessageQueuePacket> MSGQueue = new List<MessageQueuePacket>();
         private List<ActionPacket> ActionQueue = new List<ActionPacket>();
@@ -19,17 +190,6 @@ namespace Bot
         public ManualResetEvent GroupJoinWaiter = new ManualResetEvent(false);
         private Logger Log = BotSession.Instance.Logger;
 
-
-        [Flags]
-        public enum Destinations
-        {
-            DEST_AGENT = 1,
-            DEST_GROUP = 2,
-            DEST_LOCAL = 4,
-            DEST_CONSOLE_INFO = 8,
-            DEST_ACTION = 16,
-            DEST_DISCORD = 32
-        };
 
         public struct MessageQueuePacket
         {
@@ -50,24 +210,11 @@ namespace Bot
             public string Action;
         }
 
-        public delegate void MessageHandleEvent(MessageHandler.Destinations DType, UUID AgentOrSession, string MSG, int channel = 0);
+        public delegate void MessageHandleEvent(Destinations DType, UUID AgentOrSession, string MSG, int channel = 0);
         public volatile MessageHandleEvent callbacks;
         public void MessageHandle(Destinations DType, UUID AgentOrSession, string MSG, int channel = 0)
         {
-            if (DType == Destinations.DEST_ACTION)
-            {
-                if (MSG == "RESET_QUEUE")
-                {
-                    ClearQueues();
-                    return;
-                }
-                ActionPacket PKT = new ActionPacket();
-                PKT.Dest = DType;
-                PKT.ActionStr = MSG;
-                ActionQueue.Add(PKT);
-                return;
-            }
-            else if (DType == Destinations.DEST_DISCORD)
+            if (DType == Destinations.DEST_DISCORD)
             {
                 DiscordAction DA = new DiscordAction();
                 DA.Action = MSG;
@@ -100,10 +247,6 @@ namespace Bot
             if (pkt.Dest == Destinations.DEST_AGENT)
             {
                 client.Self.InstantMessage(pkt.DestID, "[" + MSGQueue.Count.ToString() + "] " + pkt.Msg);
-            }
-            else if (pkt.Dest == Destinations.DEST_CONSOLE_INFO)
-            {
-                Log.info(Restore:true, "[" + MSGQueue.Count.ToString() + "] " + pkt.Msg);
             }
             else if (pkt.Dest == Destinations.DEST_GROUP)
             {

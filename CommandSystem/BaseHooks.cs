@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Bot.CommandSystem
 {
-    class BaseHooks
+    class BaseHooks : BaseCommands
     {
 
         [WebhookAttribs("/help")]
@@ -94,28 +94,27 @@ namespace Bot.CommandSystem
 
 
 
-        [CommandGroup("show_level", 0, 0, "This command shows your current auth level if any.", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP)]
+        [CommandGroup("show_level", 0, 0, "This command shows your current auth level if any.", Destinations.DEST_AGENT | Destinations.DEST_LOCAL | Destinations.DEST_GROUP)]
         public void show_level(UUID client, int level, GridClient grid, string[] additionalArgs,
-                                MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source,
-                                CommandRegistry registry, UUID agentKey, string agentName)
+                                Destinations source,
+                                UUID agentKey, string agentName)
         {
             MHE(source, client, "Hi secondlife:///app/agent/" + agentKey.ToString() + "/about !! Your authorization level is " + level.ToString());
         }
 
-        [CommandGroup("show_version", 0, 0, "Outputs the bot version", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL)]
-        public void show_version(UUID client, int level, GridClient grid, string[] additionalArgs,
-                                MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source,
-                                CommandRegistry registry, UUID agentKey, string agentName)
+        [CommandGroup("show_version", 0, 0, "Outputs the bot version", Destinations.DEST_AGENT | Destinations.DEST_LOCAL)]
+        public void show_version(UUID client, int level,  string[] additionalArgs,
+                                 Destinations source,
+                                UUID agentKey, string agentName)
         {
             MHE(source, client, "Version " + ASMInfo.BotVer.ToString());
         }
 
 
 
-        [CommandGroup("show_admins", 4, 0, "Outputs all admin users", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL)]
-        public void show_admins(UUID client, int level, GridClient grid, string[] additionalArgs,
-                                MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source,
-                                CommandRegistry registry, UUID agentKey, string agentName)
+        [CommandGroup("show_admins", 4, 0, "Outputs all admin users", Destinations.DEST_AGENT | Destinations.DEST_LOCAL)]
+        public void show_admins(UUID client, int level, string[] additionalArgs, Destinations source,
+                                UUID agentKey, string agentName)
         {
 
             for (int i = 0; i < MainConfiguration.Instance.BotAdmins.Count; i++)
@@ -125,16 +124,16 @@ namespace Bot.CommandSystem
         }
 
 
-        [CommandGroup("terminate_bot", 5, 0, "", MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_CONSOLE_INFO | MessageHandler.Destinations.DEST_DISCORD)]
-        public void PerformExit(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
+        [CommandGroup("terminate_bot", 5, 0, "", Destinations.DEST_LOCAL | Destinations.DEST_AGENT | Destinations.DEST_DISCORD)]
+        public void PerformExit(UUID client, int level, string[] additionalArgs, Destinations source, UUID agentKey, string agentName)
         {
             MHE(source, client, "Bot exit initiated.");
-            MHE(MessageHandler.Destinations.DEST_ACTION, UUID.Zero, "{'type':'exit'}");
+            BotSession.Instance.LaunchTime = new DateTime(); // zero out date time to force a relog
         }
         // !!help
-        [CommandGroup("!help", 1, 0, "Prints the entire help registry", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
-        [CommandGroup("bot.help", 1, 0, "Alias to !help", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP)]
-        public void PrintAllHelp(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
+        [CommandGroup("!help", 1, 0, "Prints the entire help registry", Destinations.DEST_AGENT |Destinations.DEST_LOCAL | Destinations.DEST_GROUP)]
+        [CommandGroup("bot.help", 1, 0, "Alias to !help", Destinations.DEST_AGENT | Destinations.DEST_LOCAL | Destinations.DEST_GROUP)]
+        public void PrintAllHelp(UUID client, int level, string[] additionalArgs, Destinations source, UUID agentKey, string agentName)
         {
             if (MainConfiguration.Instance.UseSSL)
                 MHE(source, client, $"All commands viewable at: https://{MainConfiguration.Instance.WebServerIP}:{MainConfiguration.Instance.WebServerPort}/help");
@@ -142,10 +141,10 @@ namespace Bot.CommandSystem
                 MHE(source, client, $"All commands viewable at: http://{MainConfiguration.Instance.WebServerIP}:{MainConfiguration.Instance.WebServerPort}/help");
         }
         // !help "command"
-        [CommandGroup("help", 0, 1, "Prints help for one command", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_GROUP | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
-        public void PrintHelp(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
+        [CommandGroup("help", 0, 1, "Prints help for one command", Destinations.DEST_AGENT | Destinations.DEST_LOCAL | Destinations.DEST_GROUP )]
+        public void PrintHelp(UUID client, int level, string[] additionalArgs, Destinations source, UUID agentKey, string agentName)
         {
-            registry.PrintHelp(source, additionalArgs[0], client);
+            CommandRegistry.Instance.PrintHelp(source, additionalArgs[0], client);
         }
     }
 }

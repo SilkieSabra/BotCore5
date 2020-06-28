@@ -22,9 +22,9 @@ namespace Bot.CommandSystem
         public GridClient cl;
         public Logger Log = BotSession.Instance.Logger;
         public string newReply;
-        public unsafe bool RunChatCommand(string cmdData, GridClient client, MessageHandler.MessageHandleEvent MHE, CommandRegistry registry)
+        public unsafe bool RunChatCommand(string cmdData)
         {
-            register = registry;
+            register = CommandRegistry.Instance;
             Dictionary<UUID, int> BotAdmins = MainConfiguration.Instance.BotAdmins;
             dynamic parameters = JsonConvert.DeserializeObject(cmdData);
             string request = parameters.request;
@@ -55,46 +55,41 @@ namespace Bot.CommandSystem
             }
 
 
-            cl = client;
+            cl = BotSession.Instance.grid;
 
-            MessageHandler.Destinations sourceLoc = new MessageHandler.Destinations();
-            if (parameters.type == "chat") sourceLoc = MessageHandler.Destinations.DEST_LOCAL;
-            else if (parameters.type == "group") sourceLoc = MessageHandler.Destinations.DEST_GROUP;
-            else if (parameters.type == "im") sourceLoc = MessageHandler.Destinations.DEST_AGENT;
-            else if (parameters.type == "console")
-            {
-                userLevel = 5000;
-                sourceLoc = MessageHandler.Destinations.DEST_CONSOLE_INFO;
-            }
-            else sourceLoc = MessageHandler.Destinations.DEST_LOCAL;
+            Destinations sourceLoc = new Destinations();
+            if (parameters.type == "chat") sourceLoc = Destinations.DEST_LOCAL;
+            else if (parameters.type == "group") sourceLoc = Destinations.DEST_GROUP;
+            else if (parameters.type == "im") sourceLoc = Destinations.DEST_AGENT;
+            else sourceLoc = Destinations.DEST_LOCAL;
 
             string agentName = parameters.fromName;
-            if(sourceLoc == MessageHandler.Destinations.DEST_LOCAL)
+            if(sourceLoc == Destinations.DEST_LOCAL)
             {
                 GroupLog.Instance.WriteLogEntry(true, false, agentName, agentKey, request);
-            }else if (sourceLoc == MessageHandler.Destinations.DEST_AGENT)
+            }else if (sourceLoc == Destinations.DEST_AGENT)
             {
                 GroupLog.Instance.WriteLogEntry(false, true, agentName, agentKey, request);
             }
 
 
-            if (sourceLoc == MessageHandler.Destinations.DEST_GROUP)
+            if (sourceLoc == Destinations.DEST_GROUP)
             {
                 agentKey = fromID;
                 fromID = sessID;
 
                 // Initiate group log saver
-                string GroupName = client.Groups.GroupName2KeyCache[fromID];
+                string GroupName = cl.Groups.GroupName2KeyCache[fromID];
 
                 GroupLog.Instance.WriteLogEntry(GroupName, "secondlife:///app/agent/" + agentKey.ToString() + "/about (" + agentName + ") : " + request);
 
 
-                if (agentKey == client.Self.AgentID) return false;
+                if (agentKey == cl.Self.AgentID) return false;
             }
             else {
                 agentKey = fromID;
 
-                if (agentKey == client.Self.AgentID) return false;
+                if (agentKey == cl.Self.AgentID) return false;
             }
 
             if (request.Substring(0, 1) != "!")
@@ -155,7 +150,7 @@ namespace Bot.CommandSystem
             try
             {
 
-                register.RunCommand(request, fromID, userLevel, MHE, sourceLoc, agentKey, agentName);
+                register.RunCommand(request, fromID, userLevel, sourceLoc, agentKey, agentName);
             }
             catch (Exception e)
             {
@@ -164,17 +159,17 @@ namespace Bot.CommandSystem
                 int i;
                 int* ptr = &i;
                 IntPtr addr = (IntPtr)ptr;
-                MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Exception caught: [" + Msg + "]\n \n[STACK] " + e.StackTrace.Replace("ZNI", "")+"\nMemory Position: 0x"+addr.ToString("x")+"\nCommand: "+request+$"\nMisc Details: {fromID}, {userLevel}, {sourceLoc}, {agentKey}, {agentName}");
+                MessageFactory.Post(Destinations.DEST_LOCAL, "Exception caught: [" + Msg + "]\n \n[STACK] " + e.StackTrace.Replace("ZNI", "") + "\nMemory Position: 0x" + addr.ToString("x") + "\nCommand: " + request + $"\nMisc Details: {fromID}, {userLevel}, {sourceLoc}, {agentKey}, {agentName}", UUID.Zero);
+                
                 // do nothing here. 
             }
             Log.info(log:"Leaving command parser");
             return false;
         }
 
-        public CommandManager(Logger _Log, GridClient cl, MessageHandler.MessageHandleEvent MHE)
+        public CommandManager()
         {
-            this.cl = cl;
-            Log = _Log;
+            Log = BotSession.Instance.Logger;
         }
     }
 }

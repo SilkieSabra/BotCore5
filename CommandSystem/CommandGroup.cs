@@ -13,9 +13,9 @@ namespace Bot.CommandSystem
         public MethodInfo AssignedMethod;
         public int arguments = 0;
         public CommandHelp cmdUsage;
-        public MessageHandler.Destinations CommandSource;
+        public Destinations CommandSource;
 
-        public CommandGroup(string Command, int minLevel, int argCount, string HelpText, MessageHandler.Destinations SourceType)
+        public CommandGroup(string Command, int minLevel, int argCount, string HelpText, Destinations SourceType)
         {
             this.Command = Command;
             this.minLevel = minLevel;

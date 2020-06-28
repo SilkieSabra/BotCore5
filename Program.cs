@@ -16,7 +16,7 @@ using System.Reflection;
 
 namespace Bot
 {
-    public class Program
+    public class Program : BaseCommands
     {
         public static Logger Log;
         public static string BotVer = ASMInfo.BotVer;
@@ -25,7 +25,6 @@ namespace Bot
         public static SerialManager SM = new SerialManager();
         public static GridClient client = new GridClient();
         public static bool g_iIsRunning = true;
-        public static MessageHandler MH;
         public static CommandRegistry registry;
         public static List<IProgram> g_ZPrograms = new List<IProgram>();
         public static CommandManager CM = null;
@@ -33,16 +32,16 @@ namespace Bot
         static readonly object _CacheLock = new object();
         //public static License LicenseKey; // Not to be used yet
 
-        public static void msg(MessageHandler.Destinations D, UUID x, string m)
+        public static void msg(Destinations D, UUID x, string m)
         {
-            MH.callbacks(D, x, m);
+            MessageFactory.Post(D, m, x);
         }
 
 
         public static void passArguments(string data)
         {
             
-            CM.RunChatCommand(data, client, MH.callbacks, registry);
+            CM.RunChatCommand(data);
         }
 
         public static unsafe void Main(string[] args)
@@ -154,8 +153,9 @@ namespace Bot
                 return;
             }
             */
-            MH = new MessageHandler();
-            MH.callbacks += MH.MessageHandle;
+            BotSession.Instance.MSGSVC.MessageEvent += MSGSVC_onChat;
+            BotSession.Instance.MSGSVC.MessageEvent += MSGSVC_onIM;
+            BotSession.Instance.MSGSVC.MessageEvent += MSGSVC_onGroupMessage;
 
 
             string fna = null;
@@ -250,23 +250,22 @@ namespace Bot
                 if (File.Exists("XUP"))
                 {
                     File.Delete("XUP");
-                    MH.callbacks(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Updated to version " + BotStr + " - "+BotVer.ToString());
+
+                    MessageFactory.Post(Destinations.DEST_LOCAL, $"Updated to version {BotStr} - {BotVer}", UUID.Zero);
                 }
 
                 
                 // Setup BotSession Singleton!
                 BotSession.Instance.grid = client;
                 BotSession.Instance.Logger = Log;
-                BotSession.Instance.MHE = MH.callbacks;
-                BotSession.Instance.MH = MH;
 
                 Thread prompter = new Thread(() => {
                     BotSession.Instance.Logger.DoPrompt();
                 });
 
                 prompter.Start();
-                CM = new CommandManager(BotSession.Instance.Logger, client, MH.callbacks);
-
+                CM = new CommandManager();
+                
                 MainConfiguration.Instance.Save(); // Flush the config, to update the file format
 
                 g_ZPrograms = new List<IProgram>();
@@ -290,7 +289,7 @@ namespace Bot
                                     {
 
                                         Console.WriteLine("Plugin [" + prog.ProgramName + "] found (" + fi.FullName + ") loaded and activated");
-                                        prog.run(client, MH, CommandRegistry.Instance);
+                                        prog.run();
                                         g_ZPrograms.Add(prog);
                                     }
                                 }
@@ -345,7 +344,8 @@ namespace Bot
 
                     if (conf.ConfigFor == "Main")
                     {
-                        msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Alert: Main.json is not fully initialized. Setting default values");
+                        MessageFactory.Post(Destinations.DEST_LOCAL, "Alert: Main.json is not fully initialized. Setting default values", UUID.Zero);
+                        
                         conf.ConfigFor = "BOT";
                         conf.ConfigVersion = 1.0f;
                         // data contains nothing at the moment.
@@ -355,12 +355,11 @@ namespace Bot
 
                         if (conf.ConfigFor == "BOT")
                         {
-                            msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Main.json has been created");
-                            msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Continuing with startup");
+                            MessageFactory.Post(Destinations.DEST_LOCAL, "Main.json has been created", UUID.Zero);
                         }
                         else
                         {
-                            msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Main.json does not contain all memory. FAILURE.");
+                            MessageFactory.Post(Destinations.DEST_LOCAL, "Main.json is invalid. Cannot continue", UUID.Zero);
                             g_iIsRunning = false;
                         }
                     }
@@ -400,7 +399,7 @@ namespace Bot
                             int i;
                             int* ptr = &i;
                             IntPtr addr = (IntPtr)ptr;
-                            msg(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Generic Exception Caught: " + Msg + " [0x0A, 0x" + addr.ToString("x") + "]\nSTACK: " + STACK);
+                            MessageFactory.Post(Destinations.DEST_LOCAL, "Generic Exception Caught: " + Msg + " [0x0A, 0x" + addr.ToString("x") + "]\nSTACK: " + STACK, UUID.Zero);
                         }
                     }
 
@@ -410,46 +409,7 @@ namespace Bot
                     }
 
                     
-
-                    string jsonReply = MH.CheckActions();
-
-
-                    if (jsonReply == "NONE") jsonReply = "";
-
-
-                    if (jsonReply == "" || jsonReply == null)
-                    {
-                        //Log.debug("TICK NULL");
-
-                    }
-                    else
-                    {
-                        dynamic jsonObj = JsonConvert.DeserializeObject(jsonReply);
-                        string tp = jsonObj.type;
-                        switch (tp)
-                        {
-                            case "exit":
-                                {
-
-                                    Log.info(false, "Logging off!");
-                                    g_iIsRunning = false;
-                                    break;
-                                }
-                            case "reload_groups":
-                                {
-                                    ReloadGroupsCache();
-                                    break;
-                                }
-                            default:
-                                {
-
-                                    Log.info(true, "Unknown response code");
-                                    break;
-                                }
-                        }
-                    }
-
-                    MH.run(client);
+                    
                     //MasterObjectCaches.Save();
                     if (startupSeq) startupSeq = false;
 
@@ -491,11 +451,37 @@ namespace Bot
             //System.Console.WriteLine("PAUSING. PRESS ANY KEY TO EXIT");
             //System.Console.ReadKey();
         }
+        private static ManualResetEvent GroupJoinWaiter = new ManualResetEvent(false);
+        private static void MSGSVC_onGroupMessage(object sender, MessageEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void MSGSVC_onIM(object sender, MessageEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void MSGSVC_onChat(object sender, MessageEventArgs e)
+        {
+            switch (e.Msg.GetMessageSource())
+            {
+                case Destinations.DEST_AGENT:
+                    // send as IM
+                    BotSession.Instance.grid.Self.InstantMessage(e.Msg.GetTarget(), e.Msg.GetMessage());
+                    break;
+                case Destinations.DEST_LOCAL:
+                    BotSession.Instance.grid.Self.Chat(e.Msg.GetMessage(), e.Msg.GetChannel(), ChatType.Normal);
+                    break;
+                default:
+                    return;
+            }
+        }
 
         private static void onJoinGroupChat(object sender, GroupChatJoinedEventArgs e)
         {
             if (e.Success)
-                MH.GroupJoinWaiter.Set();
+                GroupJoinWaiter.Set();
         }
 
         private static AutoResetEvent ReqObjProperties = new AutoResetEvent(false);
@@ -574,8 +560,8 @@ namespace Bot
 
         private ManualResetEvent profile_get = new ManualResetEvent(false);
         private Avatar.AvatarProperties Properties_AV;
-        [CommandGroup("set_profile_text", 75, 1, "set_profile_text [text:Base64] - Sets the profile text", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL | MessageHandler.Destinations.DEST_CONSOLE_INFO)]
-        public void setProfileText(UUID client, int level, GridClient grid, string[] additionalArgs, MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source, CommandRegistry registry, UUID agentKey, string agentName)
+        [CommandGroup("set_profile_text", 75, 1, "set_profile_text [text:Base64] - Sets the profile text", Destinations.DEST_AGENT | Destinations.DEST_LOCAL)]
+        public void setProfileText(UUID client, int level, string[] additionalArgs, Destinations source, UUID agentKey, string agentName)
         {
             MHE(source, client, "Setting...");
 
@@ -707,7 +693,7 @@ namespace Bot
                 else
                 {
                     client.Self.GroupInviteRespond(e.IM.FromAgentID, e.IM.IMSessionID, false);
-                    MH.callbacks(MessageHandler.Destinations.DEST_AGENT, e.IM.FromAgentID, "You lack the proper permissions to perform this action");
+                    MH(Destinations.DEST_AGENT, e.IM.FromAgentID, "You lack the proper permissions to perform this action");
                 }
             }
             else if (e.IM.Dialog == InstantMessageDialog.FriendshipOffered)
@@ -715,11 +701,11 @@ namespace Bot
                 if (Level >= 4)
                 {
                     client.Friends.AcceptFriendship(e.IM.FromAgentID, e.IM.IMSessionID);
-                    MH.callbacks(MessageHandler.Destinations.DEST_AGENT, e.IM.FromAgentID, "Welcome to my friends list!");
+                    MH(Destinations.DEST_AGENT, e.IM.FromAgentID, "Welcome to my friends list!");
                 }
                 else
                 {
-                    MH.callbacks(MessageHandler.Destinations.DEST_AGENT, e.IM.FromAgentID, "You lack proper permission");
+                    MH(Destinations.DEST_AGENT, e.IM.FromAgentID, "You lack proper permission");
                 }
             }
             else if (e.IM.Dialog == InstantMessageDialog.RequestTeleport)
@@ -727,12 +713,12 @@ namespace Bot
                 if (Level >= 3)
                 {
                     client.Self.TeleportLureRespond(e.IM.FromAgentID, e.IM.IMSessionID, true);
-                    MH.callbacks(MessageHandler.Destinations.DEST_AGENT, e.IM.FromAgentID, "Teleporting...");
+                    MH(Destinations.DEST_AGENT, e.IM.FromAgentID, "Teleporting...");
                 }
                 else
                 {
                     client.Self.TeleportLureRespond(e.IM.FromAgentID, e.IM.IMSessionID, false);
-                    MH.callbacks(MessageHandler.Destinations.DEST_AGENT, e.IM.FromAgentID, "You lack permission");
+                    MH(Destinations.DEST_AGENT, e.IM.FromAgentID, "You lack permission");
                 }
             }
             else if (e.IM.Dialog == InstantMessageDialog.MessageFromObject)
@@ -842,14 +828,12 @@ namespace Bot
 
                         if(count >= 5)
                         {
-                            MH.callbacks(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Aborting group refresh attempt. Too many errors - Resetting cache and retrying");
+                            MH(Destinations.DEST_LOCAL, UUID.Zero, "Aborting group refresh attempt. Too many errors - Resetting cache and retrying");
                             GroupsEvent.Reset();
                             GroupsCache = new Dictionary<UUID, Group>();
                             client.Groups.CurrentGroups -= Groups_CurrentGroups;
 
-                            Dictionary<string, string> act = new Dictionary<string, string>();
-                            act.Add("type", "reload_groups");
-                            MH.callbacks(MessageHandler.Destinations.DEST_ACTION, UUID.Zero, JsonConvert.SerializeObject(act));
+                            ReloadGroupsCache();
 
                             return;
                         }

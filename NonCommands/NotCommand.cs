@@ -10,7 +10,7 @@ namespace Bot.NonCommands
         /// <summary>
         /// Defaults to all except action
         /// </summary>
-        public MessageHandler.Destinations SourceType = MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_CONSOLE_INFO | MessageHandler.Destinations.DEST_DISCORD | MessageHandler.Destinations.DEST_GROUP | MessageHandler.Destinations.DEST_LOCAL;
+        public Destinations SourceType = Destinations.DEST_AGENT | Destinations.DEST_DISCORD | Destinations.DEST_GROUP | Destinations.DEST_LOCAL;
         public NotCommand()
         {
             // Not Command, this just marks a class

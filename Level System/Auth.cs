@@ -13,13 +13,13 @@ using Bot.CommandSystem;
 
 namespace Bot
 {
-    class Auth
+    class Auth : BaseCommands
     {
 
-        [CommandGroup("auth_user", 5, 2, "Authorizes a user to have command access. Arguments are user (UUID), and Level (int)", MessageHandler.Destinations.DEST_AGENT | MessageHandler.Destinations.DEST_LOCAL)]
-        public void set_auth(UUID client, int level, GridClient grid, string[] additionalArgs,
-                                MessageHandler.MessageHandleEvent MHE, MessageHandler.Destinations source,
-                                CommandRegistry registry, UUID agentKey, string agentName)
+        [CommandGroup("auth_user", 5, 2, "Authorizes a user to have command access. Arguments are user (UUID), and Level (int)", Destinations.DEST_AGENT | Destinations.DEST_LOCAL)]
+        public void set_auth(UUID client, int level, string[] additionalArgs,
+                                Destinations source,
+                                UUID agentKey, string agentName)
         {
             MainConfiguration mem = MainConfiguration.Instance;
             BotSession.Instance.Logger.info(log:"Existing Admins: " + mem.BotAdmins.Count.ToString());
@@ -36,8 +36,8 @@ namespace Bot
             if (NewLevel <= 0)
             {
                 mem.BotAdmins.Remove(user);
-                MHE(MessageHandler.Destinations.DEST_AGENT, user, "Your access to the main bot has been removed. You will still have access to any command that does not require a access level higher than 0");
-                MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "Access Removed");
+                MHE(Destinations.DEST_AGENT, user, "Your access to the main bot has been removed. You will still have access to any command that does not require a access level higher than 0");
+                MHE(Destinations.DEST_LOCAL, UUID.Zero, "Access Removed");
                 mem.Save();
                 return;
             }
@@ -53,7 +53,7 @@ namespace Bot
                 mem.BotAdmins.Add(user, NewLevel);
             else
                 mem.BotAdmins[user] = NewLevel;
-            MHE(MessageHandler.Destinations.DEST_AGENT, user, "You have been granted authorization level " + NewLevel.ToString());
+            MHE(Destinations.DEST_AGENT, user, "You have been granted authorization level " + NewLevel.ToString());
             MHE(source, UUID.Zero, "Authorized");
             mem.Save();
 
