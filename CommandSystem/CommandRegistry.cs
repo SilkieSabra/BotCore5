@@ -239,8 +239,23 @@ namespace Bot.CommandSystem
                                 //(UUID client, int level, string[] additionalArgs,
                                 //Destinations source,
                                 //UUID agentKey, string agentName)
-                                Thread CommandThread = new Thread(() => cgX.AssignedMethod.Invoke(ovj, new object[] { user, level, additionalArgs, source, agentKey, agentName }));
-                                CommandThread.Start();
+                                try
+                                {
+                                    Thread CMDThread = new Thread(() =>
+                                    {
+                                        try
+                                        {
+                                            cgX.AssignedMethod.Invoke(ovj, new object[] { user,level,additionalArgs, source,agentKey, agentName });
+                                        }catch(Exception e)
+                                        {
+                                            MessageFactory.Post(Destinations.DEST_LOCAL, "Exception caught when executing a command\n" + e.Message + "\nStacktrace: " + e.StackTrace, UUID.Zero);
+                                        }
+                                    });
+                                    CMDThread.Start();
+                                }catch(Exception e)
+                                {
+                                    MessageFactory.Post(Destinations.DEST_LOCAL, "EXCEPTION CAUGHT WHEN EXECUTING COMMAND\n\n" + e.Message + "\nSTACK\n" + e.StackTrace, UUID.Zero);
+                                }
                             }
                         }
                     }

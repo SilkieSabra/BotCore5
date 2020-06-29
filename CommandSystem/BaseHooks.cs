@@ -94,8 +94,8 @@ namespace Bot.CommandSystem
 
 
 
-        [CommandGroup("show_level", 0, 0, "This command shows your current auth level if any.", Destinations.DEST_AGENT | Destinations.DEST_LOCAL | Destinations.DEST_GROUP)]
-        public void show_level(UUID client, int level, GridClient grid, string[] additionalArgs,
+        [CommandGroup("show_level", 0, 0, "This command shows your current auth level if any.", Destinations.DEST_AGENT | Destinations.DEST_DISCORD | Destinations.DEST_LOCAL | Destinations.DEST_GROUP)]
+        public void show_level(UUID client, int level, string[] additionalArgs,
                                 Destinations source,
                                 UUID agentKey, string agentName)
         {
@@ -128,7 +128,7 @@ namespace Bot.CommandSystem
         public void PerformExit(UUID client, int level, string[] additionalArgs, Destinations source, UUID agentKey, string agentName)
         {
             MHE(source, client, "Bot exit initiated.");
-            BotSession.Instance.LaunchTime = new DateTime(); // zero out date time to force a relog
+            BotSession.Instance.EnqueueExit = true;
         }
         // !!help
         [CommandGroup("!help", 1, 0, "Prints the entire help registry", Destinations.DEST_AGENT |Destinations.DEST_LOCAL | Destinations.DEST_GROUP)]

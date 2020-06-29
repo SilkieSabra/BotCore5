@@ -35,10 +35,9 @@ namespace Bot.WebHookServer
             get { return 1.7f; }
         }
 
-        public string getTick()
+        public void getTick()
         {
-
-            return "";
+            return;
         }
 
         public void passArguments(string data)

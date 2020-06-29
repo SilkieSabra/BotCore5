@@ -46,5 +46,7 @@ namespace Bot
         public DateTime LaunchTime { get; set; } = DateTime.Now;
         public bool WaitForFiveMinutes = false;
         public MessageService MSGSVC { get; set; } = new MessageService();
+        public bool EnqueueExit = false;
+        public bool EnqueueGroupRefresh = false;
     }
 }

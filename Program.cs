@@ -241,9 +241,6 @@ namespace Bot
             {
                 Console.WriteLine("Check Creds:\n \nFirst Name: '" + fna + "'\nLast Name: '" + lna + "'\nPWD: '" + pwd + "'\nBotStr: '" + BotStr + "'\nBotVer: " + BotVer.ToString()+"\n \nLogin Message: "+client.Network.LoginMessage);
                 
-                
-                if(args[0] == "-x") // debug launch
-                    Console.ReadKey();
             }
             if (LoggedIn)
             {
@@ -339,7 +336,7 @@ namespace Bot
 
                     client.Self.RetrieveInstantMessages();
                     if (client.Network.Connected == false) g_iIsRunning = false; // Quit the program and restart immediately!
-                    Thread.Sleep(2000);
+                    Thread.Sleep(1000);
 
 
                     if (conf.ConfigFor == "Main")
@@ -434,6 +431,16 @@ namespace Bot
 
                     //    onSimChange(null, new SimChangedEventArgs(client.Network.CurrentSim));
                     //}
+
+                    if (BotSession.Instance.EnqueueExit) g_iIsRunning = false;
+
+                    if (BotSession.Instance.EnqueueGroupRefresh)
+                    {
+                        BotSession.Instance.EnqueueGroupRefresh = false;
+                        ReloadGroupsCache();
+                    }
+
+                    BotSession.Instance.MSGSVC.PopMessage();
                 }
 
                 prompter.Interrupt();
@@ -454,22 +461,33 @@ namespace Bot
         private static ManualResetEvent GroupJoinWaiter = new ManualResetEvent(false);
         private static void MSGSVC_onGroupMessage(object sender, MessageEventArgs e)
         {
-            throw new NotImplementedException();
+            // not implemented, yet, but do not throw error
+            switch (e.Msg.GetMessageSource())
+            {
+                case Destinations.DEST_GROUP:
+                    BotSession.Instance.grid.Self.InstantMessageGroup(e.Msg.GetTarget(), e.Msg.GetMessage());
+                    break;
+                default:
+                    return;
+            }
         }
 
         private static void MSGSVC_onIM(object sender, MessageEventArgs e)
         {
-            throw new NotImplementedException();
+            switch (e.Msg.GetMessageSource())
+            {
+                case Destinations.DEST_AGENT:
+                    BotSession.Instance.grid.Self.InstantMessage(e.Msg.GetTarget(), e.Msg.GetMessage());
+                    break;
+                default:
+                    return;
+            }
         }
 
         private static void MSGSVC_onChat(object sender, MessageEventArgs e)
         {
             switch (e.Msg.GetMessageSource())
             {
-                case Destinations.DEST_AGENT:
-                    // send as IM
-                    BotSession.Instance.grid.Self.InstantMessage(e.Msg.GetTarget(), e.Msg.GetMessage());
-                    break;
                 case Destinations.DEST_LOCAL:
                     BotSession.Instance.grid.Self.Chat(e.Msg.GetMessage(), e.Msg.GetChannel(), ChatType.Normal);
                     break;

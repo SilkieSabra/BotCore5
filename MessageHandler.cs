@@ -7,7 +7,7 @@ using OpenMetaverse;
 using Newtonsoft.Json;
 using System.IO;
 using System.Threading;
-
+using Microsoft.VisualBasic;
 
 namespace Bot
 {
@@ -114,11 +114,72 @@ namespace Bot
         }
     }
 
+    public class DiscordMessage : Message
+    {
+        private string Msg;
+        public string ServerName;
+        public string ChannelName;
+        private UUID SenderID;
+        
+        public override int GetChannel()
+        {
+            return 0;
+        }
+
+        public override string GetMessage()
+        {
+            return Msg;
+        }
+
+        public override Destinations GetMessageSource()
+        {
+            return Destinations.DEST_DISCORD;
+        }
+
+        public override UUID GetSender()
+        {
+            // This is always UUID.Zero with the bot's discord plugin
+            return SenderID;
+        }
+
+        public override string GetSenderName()
+        {
+            return "";
+        }
+
+        public override UUID GetTarget()
+        {
+            return UUID.Zero;
+        }
+
+        internal override void set(Destinations dest, string msg, UUID agentID, string senderName, int channel)
+        {
+            Msg = msg;
+            return;
+        }
+
+        public DiscordMessage(string Msg, UUID Sender)
+        {
+            this.Msg = Msg;
+            ServerName = "MAP_NOT_KNOWN";
+            ChannelName = "MAP_NOT_KNOWN";
+            SenderID = Sender;
+        }
+
+        public DiscordMessage(string Msg, string Server, string Channel, UUID Sender)
+        {
+            this.Msg = Msg;
+            ServerName = Server;
+            ChannelName = Channel;
+            SenderID = Sender;
+        }
+    }
+
 
     public class MessageFactory
     {
 
-        public static void Post(Destinations dest, string Msg, UUID destID, int chn = 0)
+        public static void Post(Destinations dest, string Msg, UUID destID, int chn = 0,string ServerName="MAP_NOT_KNOWN", string ChannelName="MAP_NOT_KNOWN")
         {
 
             Message m = null;
@@ -129,7 +190,7 @@ namespace Bot
                     m = new GroupMessage(destID);
                     break;
                 case Destinations.DEST_DISCORD:
-                    m = new ChatMessage(UUID.Zero);
+                    m = new DiscordMessage(Msg,ServerName, ChannelName,destID);
                     break;
                 default:
                     m = new ChatMessage(destID);
@@ -148,9 +209,15 @@ namespace Bot
     /// </summary>
     public class MessageService
     {
+        public List<MessageEventArgs> QUEUE = new List<MessageEventArgs>();
         public MessageService()
         {
 
+        }
+
+        public void DoSend(MessageEventArgs args)
+        {
+            OnMessageEvent(args);
         }
 
         public static void Dispatch(Message M)
@@ -159,7 +226,9 @@ namespace Bot
             MEA.Timestamp = DateTime.Now;
             MEA.Msg = M;
 
-            BotSession.Instance.MSGSVC.OnMessageEvent(MEA);
+
+            BotSession.Instance.MSGSVC.QUEUE.Add(MEA);
+            //BotSession.Instance.MSGSVC.OnMessageEvent(MEA);
         }
 
         protected virtual void OnMessageEvent(MessageEventArgs e)
@@ -171,6 +240,15 @@ namespace Bot
             }
         }
         public event EventHandler<MessageEventArgs> MessageEvent;
+
+
+        public void PopMessage()
+        {
+            if (QUEUE.Count == 0) return;
+
+            DoSend(QUEUE.First());
+            QUEUE.Remove(QUEUE.First());
+        }
     }
 
 
@@ -182,122 +260,4 @@ namespace Bot
 
 
 
-    public class MessageHandler_old // keep the old structure for now
-    {
-        private List<MessageQueuePacket> MSGQueue = new List<MessageQueuePacket>();
-        private List<ActionPacket> ActionQueue = new List<ActionPacket>();
-        private List<DiscordAction> DiscordQueue = new List<DiscordAction>();
-        public ManualResetEvent GroupJoinWaiter = new ManualResetEvent(false);
-        private Logger Log = BotSession.Instance.Logger;
-
-
-        public struct MessageQueuePacket
-        {
-            public Destinations Dest;
-            public UUID DestID;
-            public string Msg;
-            public int channel;
-        }
-
-        public struct ActionPacket
-        {
-            public Destinations Dest;
-            public string ActionStr;
-        }
-
-        public struct DiscordAction
-        {
-            public string Action;
-        }
-
-        public delegate void MessageHandleEvent(Destinations DType, UUID AgentOrSession, string MSG, int channel = 0);
-        public volatile MessageHandleEvent callbacks;
-        public void MessageHandle(Destinations DType, UUID AgentOrSession, string MSG, int channel = 0)
-        {
-            if (DType == Destinations.DEST_DISCORD)
-            {
-                DiscordAction DA = new DiscordAction();
-                DA.Action = MSG;
-                DiscordQueue.Add(DA);
-                return; // Do nothing
-            }
-            MessageQueuePacket pkt = new MessageQueuePacket();
-            pkt.channel = channel;
-            pkt.Dest = DType;
-            pkt.DestID = AgentOrSession;
-            pkt.Msg = MSG;
-
-            if (MSGQueue != null)
-                MSGQueue.Add(pkt);
-        }
-
-
-        public void ClearQueues()
-        {
-            MSGQueue = new List<MessageQueuePacket>();
-            DiscordQueue = new List<DiscordAction>();
-        }
-
-        public void run(GridClient client)
-        {
-            // Execute one queue item
-            if (MSGQueue.Count == 0) return;
-            MessageQueuePacket pkt = MSGQueue.First();
-            MSGQueue.RemoveAt(MSGQueue.IndexOf(pkt));
-            if (pkt.Dest == Destinations.DEST_AGENT)
-            {
-                client.Self.InstantMessage(pkt.DestID, "[" + MSGQueue.Count.ToString() + "] " + pkt.Msg);
-            }
-            else if (pkt.Dest == Destinations.DEST_GROUP)
-            {
-                if (client.Self.GroupChatSessions.ContainsKey(pkt.DestID))
-                    client.Self.InstantMessageGroup(pkt.DestID, "[" + MSGQueue.Count.ToString() + "] " + pkt.Msg);
-                else
-                {
-                    GroupJoinWaiter.Reset();
-                    client.Groups.ActivateGroup(pkt.DestID);
-                    client.Self.RequestJoinGroupChat(pkt.DestID);
-                    //callbacks(Destinations.DEST_LOCAL, UUID.Zero, "Attempting to join group chat for secondlife:///app/group/" + pkt.DestID.ToString() + "/about");
-
-                    if (GroupJoinWaiter.WaitOne(TimeSpan.FromSeconds(20), false))
-                    {
-
-                        client.Self.InstantMessageGroup(pkt.DestID, "[" + MSGQueue.Count.ToString() + "] " + pkt.Msg);
-                    }
-                    else
-                    {
-                        MSGQueue.Add(pkt); // Because we failed to join the group chat we'll tack this onto the end of the queue and try again
-
-                    }
-                }
-            }
-            else if (pkt.Dest == Destinations.DEST_LOCAL)
-            {
-                client.Self.Chat("[" + MSGQueue.Count.ToString() + "] " + pkt.Msg, pkt.channel, ChatType.Normal);
-            }
-        }
-
-        public string CheckActions()
-        {
-            string RETURNStr = "";
-            if (ActionQueue.Count == 0) return "NONE";
-            else
-            {
-                RETURNStr = ActionQueue.First().ActionStr;
-                ActionQueue.Remove(ActionQueue.First());
-                return RETURNStr;
-            }
-        }
-
-        public string CheckDiscordActions()
-        {
-            if (DiscordQueue.Count == 0) return "NONE";
-            else
-            {
-                string RET = DiscordQueue.First().Action;
-                DiscordQueue.Remove(DiscordQueue.First());
-                return RET;
-            }
-        }
-    }
 }
