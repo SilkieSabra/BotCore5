@@ -244,12 +244,6 @@ namespace Bot
             }
             if (LoggedIn)
             {
-                if (File.Exists("XUP"))
-                {
-                    File.Delete("XUP");
-
-                    MessageFactory.Post(Destinations.DEST_LOCAL, $"Updated to version {BotStr} - {BotVer}", UUID.Zero);
-                }
 
                 
                 // Setup BotSession Singleton!
@@ -397,6 +391,12 @@ namespace Bot
                             int* ptr = &i;
                             IntPtr addr = (IntPtr)ptr;
                             MessageFactory.Post(Destinations.DEST_LOCAL, "Generic Exception Caught: " + Msg + " [0x0A, 0x" + addr.ToString("x") + "]\nSTACK: " + STACK, UUID.Zero);
+                        }
+                        if (File.Exists("XUP"))
+                        {
+                            File.Delete("XUP");
+
+                            MessageFactory.Post(Destinations.DEST_LOCAL, $"Updated to version {BotStr} - {BotVer}", UUID.Zero);
                         }
                     }
 
