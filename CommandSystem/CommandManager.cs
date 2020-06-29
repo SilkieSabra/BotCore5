@@ -61,6 +61,7 @@ namespace Bot.CommandSystem
             if (parameters.type == "chat") sourceLoc = Destinations.DEST_LOCAL;
             else if (parameters.type == "group") sourceLoc = Destinations.DEST_GROUP;
             else if (parameters.type == "im") sourceLoc = Destinations.DEST_AGENT;
+            else if (parameters.type == "discord") sourceLoc = Destinations.DEST_DISCORD;
             else sourceLoc = Destinations.DEST_LOCAL;
 
             string agentName = parameters.fromName;
