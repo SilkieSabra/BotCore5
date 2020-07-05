@@ -5,8 +5,8 @@ using System.Reflection;
 
 [assembly: AssemblyCompany("ZNI")]
 [assembly: AssemblyAlgorithmId(System.Configuration.Assemblies.AssemblyHashAlgorithm.MD5)]
-[assembly: AssemblyCopyright("© 2020 Tara Piccari")]
-[assembly: AssemblyFileVersion("5.3.914")]
+[assembly: AssemblyCopyright("ï¿½ 2020 Tara Piccari")]
+[assembly: AssemblyFileVersion("5.3.915")]
 [assembly: AssemblyDescription("Second Life Bot - BotCore5")]
  
 
@@ -15,7 +15,7 @@ namespace Bot.Assemble
     public class ASMInfo
     {
         public static string BotName = "ZBotCore";
-        public static string BotVer = "5.3.914";
+        public static string BotVer = "5.3.915";
         public static string GitPassword
         {
             get
