@@ -113,13 +113,24 @@ namespace Bot
             GroupID = ID;
         }
     }
-
+    public class DiscordMiscDataPacket
+    {
+        public ulong ServerID;
+        public ulong ChannelID;
+        public bool originateFromDiscord { get; set; } = false;
+        public string DiscordUserName;
+        public ulong DiscordMessageID;
+    }
     public class DiscordMessage : Message
     {
         private string Msg;
         public string ServerName;
         public string ChannelName;
         private UUID SenderID;
+        /// <summary>
+        /// This is used to store misc data that could be identifying to where the data should go
+        /// </summary>
+        public DiscordMiscDataPacket PKT;
         
         public override int GetChannel()
         {
@@ -166,12 +177,13 @@ namespace Bot
             SenderID = Sender;
         }
 
-        public DiscordMessage(string Msg, string Server, string Channel, UUID Sender)
+        public DiscordMessage(string Msg, string Server, string Channel, UUID Sender,DiscordMiscDataPacket pkt)
         {
             this.Msg = Msg;
             ServerName = Server;
             ChannelName = Channel;
             SenderID = Sender;
+            PKT = pkt;
         }
     }
 
@@ -179,7 +191,7 @@ namespace Bot
     public class MessageFactory
     {
 
-        public static void Post(Destinations dest, string Msg, UUID destID, int chn = 0,string ServerName="MAP_NOT_KNOWN", string ChannelName="MAP_NOT_KNOWN")
+        public static void Post(Destinations dest, string Msg, UUID destID, int chn = 0,string ServerName="MAP_NOT_KNOWN", string ChannelName="MAP_NOT_KNOWN",DiscordMiscDataPacket packet=null)
         {
 
             Message m = null;
@@ -190,7 +202,7 @@ namespace Bot
                     m = new GroupMessage(destID);
                     break;
                 case Destinations.DEST_DISCORD:
-                    m = new DiscordMessage(Msg,ServerName, ChannelName,destID);
+                    m = new DiscordMessage(Msg,ServerName, ChannelName,destID,packet);
                     break;
                 default:
                     m = new ChatMessage(destID);

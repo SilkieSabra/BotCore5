@@ -124,7 +124,7 @@ namespace Bot.CommandSystem
         }
 
 
-        [CommandGroup("terminate_bot", 5, 0, "", Destinations.DEST_LOCAL | Destinations.DEST_AGENT | Destinations.DEST_DISCORD)]
+        [CommandGroup("terminate_bot", 5, 0, "", Destinations.DEST_LOCAL | Destinations.DEST_AGENT | Destinations.DEST_DISCORD | Destinations.DEST_GROUP)]
         public void PerformExit(UUID client, int level, string[] additionalArgs, Destinations source, UUID agentKey, string agentName)
         {
             MHE(source, client, "Bot exit initiated.");

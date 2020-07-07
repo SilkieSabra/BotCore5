@@ -219,6 +219,7 @@ namespace Bot.CommandSystem
                             if ((dests & Destinations.DEST_AGENT) == source) Allowed = true;
                             if ((dests & Destinations.DEST_GROUP) == source) Allowed = true;
                             if ((dests & Destinations.DEST_LOCAL) == source) Allowed = true;
+                            if ((dests & Destinations.DEST_DISCORD) == source) Allowed = true; 
 
                             if (!Allowed)
                             {
@@ -248,7 +249,8 @@ namespace Bot.CommandSystem
                                             cgX.AssignedMethod.Invoke(ovj, new object[] { user,level,additionalArgs, source,agentKey, agentName });
                                         }catch(Exception e)
                                         {
-                                            MessageFactory.Post(Destinations.DEST_LOCAL, "Exception caught when executing a command\n" + e.Message + "\nStacktrace: " + e.StackTrace, UUID.Zero);
+                                            BotSession.Instance.grid.Self.Chat("Exception caught when executing a command\n" + e.Message + "\nStacktrace: " + e.StackTrace, 0, ChatType.Shout);
+                                            //MessageFactory.Post(Destinations.DEST_LOCAL, "Exception caught when executing a command\n" + e.Message + "\nStacktrace: " + e.StackTrace, UUID.Zero);
                                         }
                                     });
                                     CMDThread.Start();
