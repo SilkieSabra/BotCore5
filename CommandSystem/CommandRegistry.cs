@@ -230,7 +230,7 @@ namespace Bot.CommandSystem
                             {
                                 if (MainConfiguration.Instance.DisabledCommands.Contains(cgX.Command))
                                 {
-                                    BaseCommands.MH(source, user, "Error: That command is disabled");
+                                    BaseCommands.MH(source, user, "Function: '"+cgX.AssignedMethod.Name+"' associated with command '"+cgX.Command+"' is disabled by a administrator");
                                     return;
                                 }
                                 var ovj = Activator.CreateInstance(cgX.AssignedMethod.DeclaringType);
