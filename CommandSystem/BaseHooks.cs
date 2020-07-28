@@ -146,5 +146,38 @@ namespace Bot.CommandSystem
         {
             CommandRegistry.Instance.PrintHelp(source, additionalArgs[0], client);
         }
+
+
+        [CommandGroup("disable", 6, 1, "disable [string] - Disables a command", Destinations.DEST_AGENT | Destinations.DEST_GROUP | Destinations.DEST_LOCAL)]
+        public void DisableCmd(UUID client, int level, string[] additionalArgs, Destinations source, UUID agentKey, string agentName)
+        {
+            if (!MainConfiguration.Instance.DisabledCommands.Contains(additionalArgs[0]))
+            {
+                MHE(source, client, "Disabling command...");
+                MainConfiguration.Instance.DisabledCommands.Add(additionalArgs[0]);
+                MHE(source, client, "Command successfully disabled");
+                MainConfiguration.Instance.Save();
+            } else
+            {
+                MHE(source, client, "Error: Command is already disabled");
+            }
+        }
+
+
+        [CommandGroup("enable", 6, 1, "enable [string] - Enables a command", Destinations.DEST_AGENT | Destinations.DEST_GROUP | Destinations.DEST_LOCAL)]
+        public void EnableCmd(UUID client, int level, string[] additionalArgs, Destinations source, UUID agentKey, string agentName)
+        {
+            if (MainConfiguration.Instance.DisabledCommands.Contains(additionalArgs[0]))
+            {
+                MHE(source, client, "Enabling command...");
+                MainConfiguration.Instance.DisabledCommands.Remove(additionalArgs[0]);
+                MainConfiguration.Instance.Save();
+                MHE(source, client, "Command successfully enabled");
+            }
+            else
+            {
+                MHE(source, client, "Error: That command is not disabled!");
+            }
+        }
     }
 }

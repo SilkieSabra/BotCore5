@@ -72,6 +72,8 @@ namespace Bot
 
         public List<string> AuthedGithubUsers { get; set; } = new List<string>();
 
+        public List<string> DisabledCommands { get; set; } = new List<string>();
+
         public bool Authed(string GHLogin)
         {
             if (AuthedGithubUsers.Contains(GHLogin)) return true;

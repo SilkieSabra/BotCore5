@@ -228,7 +228,11 @@ namespace Bot.CommandSystem
                             }
                             else
                             {
-
+                                if (MainConfiguration.Instance.DisabledCommands.Contains(cgX.Command))
+                                {
+                                    BaseCommands.MH(source, user, "Error: That command is disabled");
+                                    return;
+                                }
                                 var ovj = Activator.CreateInstance(cgX.AssignedMethod.DeclaringType);
                                 string[] additionalArgs = new string[cgX.arguments];
                                 IgnoreCount = cgX.arguments;
