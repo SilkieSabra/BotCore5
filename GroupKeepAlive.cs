@@ -26,7 +26,7 @@ namespace Bot
                 else
                 {
                     BotSession.Instance.grid.Self.RequestJoinGroupChat(groups.Key);
-                    MHE(Destinations.DEST_LOCAL, UUID.Zero, "I lost the group chat session for secondlife:///app/group/"+groups.Key.ToString()+"/about - Attempting to rejoin the group chat")
+                    MHE(Destinations.DEST_LOCAL, UUID.Zero, "I lost the group chat session for secondlife:///app/group/" + groups.Key.ToString() + "/about - Attempting to rejoin the group chat");
                 }
             }
         }
