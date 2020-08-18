@@ -193,80 +193,71 @@ namespace Bot.CommandSystem
 
         public void RunCommand(string cmdString, UUID user, int level, Destinations source, UUID agentKey, string agentName)
         {
+            // Rev 54395 - first word is always the command itself. Everything else that follows is arguments
+
             int pos = 0;
             string[] cmdStruct = cmdString.Split(' ');
-            int IgnoreCount = 0;
-            foreach (string S in cmdStruct)
+            string commandLabel = cmdStruct[0];
+
+            if (Cmds.ContainsKey(commandLabel))
             {
-                if (IgnoreCount > 0) { IgnoreCount--; }
-                else
+                CommandGroup cg = Cmds[commandLabel];
+                if(level >= cg.minLevel)
                 {
+                    Destinations dst = cg.CommandSource;
+                    bool allowed = false;
+                    if ((dst & Destinations.DEST_AGENT) == source) allowed = true;
+                    if ((dst & Destinations.DEST_GROUP) == source) allowed = true;
+                    if ((dst & Destinations.DEST_LOCAL) == source) allowed = true;
 
-                    // Search for Command
-                    if (Cmds.ContainsKey(S))
+                    if (allowed)
                     {
-                        // this must be a command
-                        // argument types will ALWAYS be structured like this:
-                        // UUID, int, GridClient, [args up to argCount], optional:{SysOut}
-
-                        CommandGroup cgX = Cmds[S];
-                        if (level >= cgX.minLevel)
+                        if (MainConfiguration.Instance.DisabledCommands.Contains(cg.Command))
                         {
-                            // Check that the destination is allowed.
-                            // If not then skip this command entirely
-                            Destinations dests = cgX.CommandSource;
-                            bool Allowed = false;
-                            if ((dests & Destinations.DEST_AGENT) == source) Allowed = true;
-                            if ((dests & Destinations.DEST_GROUP) == source) Allowed = true;
-                            if ((dests & Destinations.DEST_LOCAL) == source) Allowed = true;
-                            if ((dests & Destinations.DEST_DISCORD) == source) Allowed = true; 
+                            BaseCommands.MH(source, user, "Function: '" + cg.AssignedMethod.Name + "' associated with command '" + cg.Command + "' is disabled by a administrator");
+                            return;
+                        }else
+                        {
+                            //Command is not disabled
+                            var ovj = Activator.CreateInstance(cg.AssignedMethod.DeclaringType);
+                            string[] args = new string[cmdStruct.Length - 1];
 
-                            if (!Allowed)
+                            for(int i=1; i<= cmdStruct.Length; i++)
                             {
-                                IgnoreCount = cgX.arguments;
-
+                                args[i - 1] = cmdStruct[i];
                             }
-                            else
+
+                            //(UUID client, int level, string[] additionalArgs,
+                            //Destinations source,
+                            //UUID agentKey, string agentName)
+                            try
                             {
-                                if (MainConfiguration.Instance.DisabledCommands.Contains(cgX.Command))
+
+                                Thread cmdthread = new Thread(() =>
                                 {
-                                    BaseCommands.MH(source, user, "Function: '"+cgX.AssignedMethod.Name+"' associated with command '"+cgX.Command+"' is disabled by a administrator");
-                                    return;
-                                }
-                                var ovj = Activator.CreateInstance(cgX.AssignedMethod.DeclaringType);
-                                string[] additionalArgs = new string[cmdStruct.Length-1]; // no longer use a hardcoded argument length
-                                IgnoreCount = cgX.arguments;
-                                for (int i = 1; i <= cmdStruct.Length; i++)
-                                {
-                                    additionalArgs[i - 1] = cmdStruct[pos + i];
-                                }
-                                pos++;
-                                //(UUID client, int level, string[] additionalArgs,
-                                //Destinations source,
-                                //UUID agentKey, string agentName)
-                                try
-                                {
-                                    Thread CMDThread = new Thread(() =>
+                                    try
                                     {
-                                        try
-                                        {
-                                            cgX.AssignedMethod.Invoke(ovj, new object[] { user,level,additionalArgs, source,agentKey, agentName });
-                                        }catch(Exception e)
-                                        {
-                                            BotSession.Instance.grid.Self.Chat("Exception caught when executing a command\n" + e.Message + "\nStacktrace: " + e.StackTrace, 0, ChatType.Shout);
-                                            //MessageFactory.Post(Destinations.DEST_LOCAL, "Exception caught when executing a command\n" + e.Message + "\nStacktrace: " + e.StackTrace, UUID.Zero);
-                                        }
-                                    });
-                                    CMDThread.Start();
-                                }catch(Exception e)
-                                {
-                                    MessageFactory.Post(Destinations.DEST_LOCAL, "EXCEPTION CAUGHT WHEN EXECUTING COMMAND\n\n" + e.Message + "\nSTACK\n" + e.StackTrace, UUID.Zero);
-                                }
+                                        cg.AssignedMethod.Invoke(ovj, new object[] { user, level, args, source, agentKey, agentName });
+
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        BotSession.Instance.grid.Self.Chat("Exception caught when executing a command\n" + e.Message + "\nStacktrace: " + e.StackTrace, 0, ChatType.Shout);
+                                        //MessageFactory.Post(Destinations.DEST_LOCAL, "Exception caught when executing a command\n" + e.Message + "\nStacktrace: " + e.StackTrace, UUID.Zero);
+                                    }
+                                });
+                                cmdthread.Start();
                             }
+                            catch (Exception e)
+                            {
+                                MessageFactory.Post(Destinations.DEST_LOCAL, "EXCEPTION CAUGHT WHEN EXECUTING COMMAND\n\n" + e.Message + "\nSTACK\n" + e.StackTrace, UUID.Zero);
+                            }
+
                         }
                     }
                 }
             }
+
         }
 
 
