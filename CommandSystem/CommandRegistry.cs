@@ -220,13 +220,13 @@ namespace Bot.CommandSystem
                         {
                             //Command is not disabled
                             var ovj = Activator.CreateInstance(cg.AssignedMethod.DeclaringType);
-                            string[] args = new string[cmdStruct.Length - 1];
+                            List<string> lArgs = new List<string>();
 
                             for(int i=1; i<= cmdStruct.Length; i++)
                             {
-                                args[i - 1] = cmdStruct[i];
+                                lArgs.Add(cmdStruct[i]);
                             }
-
+                            string[] args = lArgs.ToArray();
                             //(UUID client, int level, string[] additionalArgs,
                             //Destinations source,
                             //UUID agentKey, string agentName)
