@@ -25,21 +25,20 @@ namespace Bot.CommandSystem
         {
             public string Name;
             public int minLevel;
-            public int args;
             public string Text;
             public string sources;
             public Destinations dests_allowed;
         }
         public string GetUsage()
         {
-            return "_\nCommand [" + h.Name + "]\n" + h.sources + "\nMinimum Level Required [" + h.minLevel.ToString() + "]\nTotal Arguments [" + h.args.ToString() + "]\nUsage: " + h.Text;
+            return "_\nCommand [" + h.Name + "]\n" + h.sources + "\nMinimum Level Required [" + h.minLevel.ToString() + "]\nUsage: " + h.Text;
 
         }
         public string RawUsage()
         {
             return "Usage: " + h.Text;
         }
-        public CommandHelp(string CmdName, int minLevel, int argCount, string HelpText, Destinations DESTS)
+        public CommandHelp(string CmdName, int minLevel, string HelpText, Destinations DESTS)
         {
             h = new Help();
             string Applicable = "Command can be used in [";
@@ -51,7 +50,6 @@ namespace Bot.CommandSystem
             if (Applicable.Substring(Applicable.Length - 1, 1) == " ") Applicable = Applicable.Substring(0, Applicable.Length - 2) + "]";
 
             h.dests_allowed = DESTS;
-            h.args = argCount;
             h.Name = CmdName;
             h.minLevel = minLevel;
             if (HelpText == "") HelpText = NoAdditionalArguments;

@@ -42,7 +42,7 @@ namespace Bot
         /// <param name="registry"></param>
         /// <param name="agentKey"></param>
         /// <param name="agentName"></param>
-        [CommandGroup("log_chat", 5, 0, "log_chat - Toggles chat and IM logging", Destinations.DEST_AGENT | Destinations.DEST_LOCAL )]
+        [CommandGroup("log_chat", 5, "log_chat - Toggles chat and IM logging", Destinations.DEST_AGENT | Destinations.DEST_LOCAL )]
         public void toggleChatLog(UUID client, int level, string[] additionalArgs, Destinations source, UUID agentKey, string agentName)
         {
             MHE(source, client, "Toggling");

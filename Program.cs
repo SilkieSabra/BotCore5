@@ -578,7 +578,7 @@ namespace Bot
 
         private ManualResetEvent profile_get = new ManualResetEvent(false);
         private Avatar.AvatarProperties Properties_AV;
-        [CommandGroup("set_profile_text", 75, 1, "set_profile_text [text:Base64] - Sets the profile text", Destinations.DEST_AGENT | Destinations.DEST_LOCAL)]
+        [CommandGroup("set_profile_text", 6, "set_profile_text [text:Base64] - Sets the profile text", Destinations.DEST_AGENT | Destinations.DEST_LOCAL)]
         public void setProfileText(UUID client, int level, string[] additionalArgs, Destinations source, UUID agentKey, string agentName)
         {
             MHE(source, client, "Setting...");

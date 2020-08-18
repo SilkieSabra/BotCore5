@@ -58,7 +58,7 @@ namespace Bot.WebHookServer
         }
 
 
-        [CommandGroup("webhook_auth", 4, 2, "webhook_auth [github_name] [y/n]", Destinations.DEST_AGENT | Destinations.DEST_LOCAL | Destinations.DEST_GROUP)]
+        [CommandGroup("webhook_auth", 4, "webhook_auth [github_name] [y/n]", Destinations.DEST_AGENT | Destinations.DEST_LOCAL | Destinations.DEST_GROUP)]
         public void WebHookAuthMgr(UUID client, int level, string[] additionalArgs,  Destinations source, UUID agentKey, string agentName)
         {
             MainConfiguration cfg = MainConfiguration.Instance;

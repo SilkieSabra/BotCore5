@@ -234,9 +234,9 @@ namespace Bot.CommandSystem
                                     return;
                                 }
                                 var ovj = Activator.CreateInstance(cgX.AssignedMethod.DeclaringType);
-                                string[] additionalArgs = new string[cgX.arguments];
+                                string[] additionalArgs = new string[cmdStruct.Length-1]; // no longer use a hardcoded argument length
                                 IgnoreCount = cgX.arguments;
-                                for (int i = 1; i <= cgX.arguments; i++)
+                                for (int i = 1; i <= cmdStruct.Length; i++)
                                 {
                                     additionalArgs[i - 1] = cmdStruct[pos + i];
                                 }

@@ -16,7 +16,7 @@ namespace Bot
     class Auth : BaseCommands
     {
 
-        [CommandGroup("auth_user", 5, 2, "Authorizes a user to have command access. Arguments are user (UUID), and Level (int)", Destinations.DEST_AGENT | Destinations.DEST_LOCAL)]
+        [CommandGroup("auth_user", 5, "Authorizes a user to have command access. Arguments are user (UUID), and Level (int)", Destinations.DEST_AGENT | Destinations.DEST_LOCAL)]
         public void set_auth(UUID client, int level, string[] additionalArgs,
                                 Destinations source,
                                 UUID agentKey, string agentName)

@@ -26,7 +26,6 @@ namespace Bot
                 else
                 {
                     BotSession.Instance.grid.Self.RequestJoinGroupChat(groups.Key);
-                    MHE(Destinations.DEST_LOCAL, UUID.Zero, "I lost the group chat session for secondlife:///app/group/" + groups.Key.ToString() + "/about - Attempting to rejoin the group chat");
                 }
             }
         }
@@ -100,7 +99,6 @@ namespace Bot
 
                         if (count >= 5)
                         {
-                            MH(Destinations.DEST_LOCAL, UUID.Zero, "Aborting group refresh attempt. Too many errors - Resetting cache and retrying");
                             GroupsEvent.Reset();
                             GroupsCache = new Dictionary<UUID, Group>();
                             BotSession.Instance.grid.Groups.CurrentGroups -= Groups_CurrentGroups;
@@ -154,8 +152,6 @@ namespace Bot
 
         public void run()
         {
-            MHE(Destinations.DEST_LOCAL, UUID.Zero, $"Plugin [{ProgramName}]: {ProgramVersion} has been initialized");
-
             BotSession.Instance.grid.Groups.CurrentGroups += Groups_CurrentGroups;
             BotSession.Instance.grid.Groups.GroupRoleDataReply += CacheGroupRoles;
 

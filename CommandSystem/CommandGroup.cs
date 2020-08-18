@@ -11,17 +11,15 @@ namespace Bot.CommandSystem
         public string Command;
         public int minLevel;
         public MethodInfo AssignedMethod;
-        public int arguments = 0;
         public CommandHelp cmdUsage;
         public Destinations CommandSource;
 
-        public CommandGroup(string Command, int minLevel, int argCount, string HelpText, Destinations SourceType)
+        public CommandGroup(string Command, int minLevel, string HelpText, Destinations SourceType)
         {
             this.Command = Command;
             this.minLevel = minLevel;
-            arguments = argCount;
             CommandSource = SourceType;
-            cmdUsage = new CommandHelp(Command, minLevel, argCount, HelpText, SourceType);
+            cmdUsage = new CommandHelp(Command, minLevel, HelpText, SourceType);
 
         }
     }
