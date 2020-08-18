@@ -222,7 +222,7 @@ namespace Bot.CommandSystem
                             var ovj = Activator.CreateInstance(cg.AssignedMethod.DeclaringType);
                             List<string> lArgs = new List<string>();
 
-                            for(int i=1; i<= cmdStruct.Length; i++)
+                            for(int i=1; i < cmdStruct.Length; i++)
                             {
                                 lArgs.Add(cmdStruct[i]);
                             }
