@@ -54,19 +54,21 @@ namespace Bot.Visitors
 
     public class Visitor
     {
-        public UUID ID { get; set} = UUID.Zero;
-        public string username { get; set; } = "first.last";
+        public UUID ID { get; set; } = UUID.Zero;
+        public bool Greeted { get; set; } = false;
         public DateTime LastSeen { get; set; } = DateTime.Now;
         public Dictionary<DateTime, TimeSpan> MinutesSeenPerDay { get; set; } = new Dictionary<DateTime, TimeSpan>();
-
+        public bool IsMemberOfMyActiveGroup { get; set; } = false;
 
         internal Visitor(UUID kID)
         {
             ID = kID;
-            username = "";
+            Greeted = false;
             LastSeen = DateTime.Now;
             MinutesSeenPerDay = new Dictionary<DateTime, TimeSpan>();
             MinutesSeenPerDay.Add(DateTime.Today, TimeSpan.FromMinutes(0));
         }
+
+        public Visitor() { }
     }
 }

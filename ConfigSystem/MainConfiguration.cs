@@ -71,6 +71,7 @@ namespace Bot
 
         public bool GreeterEnabled { get; set; } = false;
         public string GreeterMessage { get; set; } = "";
+        public bool VisitorLogEnabled { get; set; } = false;
 
         public Dictionary<UUID, int> BotAdmins { get; set; } = new Dictionary<UUID, int>();
 

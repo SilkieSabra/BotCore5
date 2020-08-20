@@ -294,9 +294,53 @@ namespace Bot
                 }
 
                 CommandRegistry.Instance.LocateCommands();
+                if (!File.Exists("Inventory.blob"))
+                {
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.Store.RootFolder.OwnerID, BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
 
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Animation), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Bodypart), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.CallingCard), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Clothing), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Folder), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Gesture), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.ImageJPEG), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.ImageTGA), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Landmark), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Link), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.LinkFolder), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.LSLBytecode), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.LSLText), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Mesh), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Notecard), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Object), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Person), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Simstate), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Sound), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.SoundWAV), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Texture), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.TextureTGA), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Unknown), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+                    BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.FindFolderForType(AssetType.Widget), BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
+
+
+
+
+
+                }
+                else
+                    BotSession.Instance.grid.Inventory.Store.RestoreFromDisk("Inventory.blob");
+
+
+                int iLastInvLength = 0;
                 while (g_iIsRunning)
                 {
+
+                    if(iLastInvLength != BotSession.Instance.grid.Inventory.Store.Items.Count)
+                    {
+                        BotSession.Instance.grid.Inventory.Store.SaveToDisk("Inventory.blob");
+                        iLastInvLength = BotSession.Instance.grid.Inventory.Store.Items.Count;
+                    }
                     string consoleCmd = "N/A";
                     try
                     {
