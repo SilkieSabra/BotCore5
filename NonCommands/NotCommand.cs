@@ -11,9 +11,11 @@ namespace Bot.NonCommands
         /// Defaults to all except action
         /// </summary>
         public Destinations SourceType = Destinations.DEST_AGENT | Destinations.DEST_DISCORD | Destinations.DEST_GROUP | Destinations.DEST_LOCAL;
+
         public NotCommand()
         {
             // Not Command, this just marks a class
         }
+
     }
 }
