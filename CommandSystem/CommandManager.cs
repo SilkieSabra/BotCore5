@@ -96,7 +96,7 @@ namespace Bot.CommandSystem
             if (request.Substring(0, 1) != "!")
             {
                 // Check if active bug or feature report session. If not- return.
-                nRegistry.Dispatch(request, agentKey, agentName, sourceLoc, fromID);
+                nRegistry.Dispatch(request, agentKey, ((parameters.source == "obj") ? "Object" : agentName), sourceLoc, fromID);
                 /*
                 if (ocb.ActiveReportSessions.ContainsKey(agentKey) && ocb.ActiveReportSessions.Count > 0)
                 {
