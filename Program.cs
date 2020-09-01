@@ -46,6 +46,7 @@ namespace Bot
 
         public static unsafe void Main(string[] args)
         {
+            File.WriteAllText("PID.lock", Process.GetCurrentProcess().Id.ToString());
             Console.WriteLine("Setting up Main Configuration");
             Log = new Logger("BotCore5");
             BotSession.Instance.Logger = Log;
@@ -497,6 +498,7 @@ namespace Bot
                 AutoResetEvent are = new AutoResetEvent(false);
                 are.WaitOne(TimeSpan.FromMinutes(5));
             }
+            File.Delete("PID.lock");
             Environment.Exit(0);
 
             //System.Console.WriteLine("PAUSING. PRESS ANY KEY TO EXIT");
