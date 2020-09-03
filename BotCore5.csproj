@@ -9,27 +9,8 @@
     <Configurations>Debug;Release;DebPub</Configurations>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebPub|AnyCPU'">
-    <OutputPath>bin\debpub</OutputPath>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="libremetaverse\**" />
-    <EmbeddedResource Remove="libremetaverse\**" />
-    <None Remove="libremetaverse\**" />
-  </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="libremetaverse\LibreMetaverse.StructuredData\LibreMetaverse.StructuredData.csproj" />
-    <ProjectReference Include="libremetaverse\LibreMetaverse.Utilities\LibreMetaverse.Utilities.csproj" />
-    <ProjectReference Include="libremetaverse\LibreMetaverseTypes\LibreMetaverse.Types.csproj" />
-    <ProjectReference Include="libremetaverse\LibreMetaverse\LibreMetaverse.csproj" />
-  </ItemGroup>
-
 </Project>
