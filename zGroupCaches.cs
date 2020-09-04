@@ -49,7 +49,7 @@ namespace Bot
 
             //if (!File.Exists("OpenCollarBot.bdf")) return;
             SerialManager sm = new SerialManager();
-            sm.Write<zGroupCaches>("BotData/zGroupCache/" + CustomName, this);
+            sm.Write<zGroupCaches>("zGroupCache/" + CustomName, this);
             sm = null;
         }
 
