@@ -48,9 +48,8 @@ namespace Bot
         public static unsafe void Main(string[] args)
         {
             File.WriteAllText("PID.lock", Process.GetCurrentProcess().Id.ToString());
-            if (!Directory.Exists("BotData")) Directory.CreateDirectory("BotData");
-            Directory.SetCurrentDirectory("BotData");
 
+            if (!Directory.Exists("BotData")) Directory.CreateDirectory("BotData");
 
 
             Console.WriteLine("Setting up Main Configuration");

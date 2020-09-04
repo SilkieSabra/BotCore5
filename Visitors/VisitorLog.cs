@@ -35,8 +35,8 @@ namespace Bot.Visitors
         {
             lock (fileLock)
             {
-                if (File.Exists("VisitorLog.json"))
-                    return JsonConvert.DeserializeObject<VisitorLog>(File.ReadAllText("VisitorLog.json"));
+                if (File.Exists("BotData/VisitorLog.json"))
+                    return JsonConvert.DeserializeObject<VisitorLog>(File.ReadAllText("BotData/VisitorLog.json"));
                 else return new VisitorLog();
             }
         }
@@ -45,7 +45,7 @@ namespace Bot.Visitors
         {
             lock (fileLock)
             {
-                File.WriteAllText("VisitorLog.json", JsonConvert.SerializeObject(l, Formatting.Indented));
+                File.WriteAllText("BotData/VisitorLog.json", JsonConvert.SerializeObject(l, Formatting.Indented));
             }
         }
 

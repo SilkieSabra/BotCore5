@@ -49,15 +49,15 @@ namespace Bot
 
             //if (!File.Exists("OpenCollarBot.bdf")) return;
             SerialManager sm = new SerialManager();
-            sm.Write<zGroupCaches>("zGroupCache/" + CustomName, this);
+            sm.Write<zGroupCaches>("BotData/zGroupCache/" + CustomName, this);
             sm = null;
         }
 
         public static zGroupCaches Reload(string CustomName)
         {
-            if (!File.Exists("zGroupCache/" + CustomName + ".json")) return new zGroupCaches();
+            if (!File.Exists("BotData/zGroupCache/" + CustomName + ".json")) return new zGroupCaches();
             SerialManager sm = new SerialManager();
-            zGroupCaches ocb = sm.Read<zGroupCaches>("GroupCache/" + CustomName);
+            zGroupCaches ocb = sm.Read<zGroupCaches>("zGroupCache/" + CustomName);
             if (ocb == null)
             {
                 return new zGroupCaches();

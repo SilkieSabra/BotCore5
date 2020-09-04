@@ -39,9 +39,10 @@ namespace Bot.Charts
         {
             lock (FileHandler)
             {
+                if (File.Exists("Charts.json")) File.Move("Charts.json", Path.Combine("BotData", "Charts.json"));
                 // Read json file
-                if (!File.Exists("Charts.json")) return new ChartMemory();
-                return JsonConvert.DeserializeObject<ChartMemory>(File.ReadAllText("Charts.json"));
+                if (!File.Exists("BotData/Charts.json")) return new ChartMemory();
+                return JsonConvert.DeserializeObject<ChartMemory>(File.ReadAllText("BotData/Charts.json"));
             }
         }
 
@@ -57,7 +58,7 @@ namespace Bot.Charts
         {
             lock (FileHandler)
             {
-                File.WriteAllText("Charts.json", JsonConvert.SerializeObject(Instance, Formatting.Indented));
+                File.WriteAllText("BotData/Charts.json", JsonConvert.SerializeObject(Instance, Formatting.Indented));
             }
         }
 

@@ -87,6 +87,7 @@ namespace Bot
 
         public void Load()
         {
+            if (File.Exists("Main.json")) File.Move("Main.json", Path.Combine("BotData", "Main.json"));
             inst = new MainConfiguration();
             SerialManager sm = new SerialManager();
             try

@@ -41,9 +41,9 @@ namespace Bot
                     string date = DateTime.Now.ToString("M-d-yyyy");
                     date += " " + LogName + ".log";
 
-                    if (!Directory.Exists("GroupChatLogs")) Directory.CreateDirectory("GroupChatLogs");
+                    if (!Directory.Exists("BotData/GroupChatLogs")) Directory.CreateDirectory("BotData/GroupChatLogs");
 
-                    date = "GroupChatLogs/" + date;
+                    date = "BotData/GroupChatLogs/" + date;
 
                     File.AppendAllText(date, "[" + DateTime.Now.ToString("hh:mm:ss") + "]: " + ToAppend + "\n");
                 }
@@ -63,12 +63,12 @@ namespace Bot
             LogFormat = LogFormat.Replace("%MESSAGE%", Message);
             LogFormat = LogFormat.Replace("%UUID%", SenderID.ToString());
 
-            filename = "GroupChatLogs/" + filename;
+            filename = "BotData/GroupChatLogs/" + filename;
             try
             {
                 lock (_writeLock)
                 {
-                    if (!Directory.Exists("GroupChatLogs")) Directory.CreateDirectory("GroupChatLogs");
+                    if (!Directory.Exists("BotData/GroupChatLogs")) Directory.CreateDirectory("BotData/GroupChatLogs");
                     File.AppendAllText(filename, LogFormat + "\n");
                 }
             }catch(Exception e)
@@ -88,7 +88,7 @@ namespace Bot
             string GrpName = additionalArgs[0].Replace('_', ' ');
             string[] search = additionalArgs[1].Split('|');
 
-            DirectoryInfo di = new DirectoryInfo("GroupChatLogs");
+            DirectoryInfo di = new DirectoryInfo("BotData/GroupChatLogs");
             foreach (FileInfo fi in di.GetFiles())
             {
                 // check if filename contains the group name
@@ -99,7 +99,7 @@ namespace Bot
                     // read file
                     lock (_fileRead)
                     {
-                        foreach (string S in File.ReadLines("GroupChatLogs/" + onlyName + ".log"))
+                        foreach (string S in File.ReadLines("BotData/GroupChatLogs/" + onlyName + ".log"))
                         {
                             foreach (string V in search)
                             {
@@ -133,7 +133,7 @@ namespace Bot
                 try
                 {
 
-                    foreach (string s in File.ReadLines("GroupChatLogs/" + Uri.UnescapeDataString(arguments[0]) + ".log"))
+                    foreach (string s in File.ReadLines("BotData/GroupChatLogs/" + Uri.UnescapeDataString(arguments[0]) + ".log"))
                     {
                         string tmp = s;
                         string[] Ltmp = tmp.Split(' ');
@@ -173,7 +173,7 @@ namespace Bot
             WebhookRegistry.HTTPResponseData hrd = new WebhookRegistry.HTTPResponseData();
             hrd.Status = 200;
             hrd.ReplyString = "<center><h2>Group Chat Logs</h2></center>";
-            DirectoryInfo di = new DirectoryInfo("GroupChatLogs");
+            DirectoryInfo di = new DirectoryInfo("BotData/GroupChatLogs");
             foreach (FileInfo fi in di.GetFiles())
             {
                 hrd.ReplyString += "<br/><a href='/viewlog/" + Path.GetFileNameWithoutExtension(fi.Name) + "'> " + fi.Name + "</a>";

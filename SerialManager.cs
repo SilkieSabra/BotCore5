@@ -71,7 +71,7 @@ namespace Bot
 
                 try
                 {
-                    File.WriteAllText(Name + ".json", Json);
+                    File.WriteAllText("BotData/"+Name + ".json", Json);
                 } catch(Exception E)
                 {
                     BotSession.Instance.Logger.info(true, E.Message);
@@ -89,7 +89,7 @@ namespace Bot
                 {
 
                     T obj = default(T);
-                    string serial = File.ReadAllText(Name + ".json");
+                    string serial = File.ReadAllText("BotData/"+Name + ".json");
                     
                     obj = (T)JsonConvert.DeserializeObject<T>(serial);
                     BotSession.Instance.Logger.info(true, "Returning class object");
