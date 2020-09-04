@@ -48,6 +48,11 @@ namespace Bot
         public static unsafe void Main(string[] args)
         {
             File.WriteAllText("PID.lock", Process.GetCurrentProcess().Id.ToString());
+            if (!Directory.Exists("BotData")) Directory.CreateDirectory("BotData");
+            Directory.SetCurrentDirectory("BotData");
+
+
+
             Console.WriteLine("Setting up Main Configuration");
             Log = new Logger("BotCore5");
             BotSession.Instance.Logger = Log;
