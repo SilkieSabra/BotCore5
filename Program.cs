@@ -300,7 +300,7 @@ namespace Bot
                 }
 
                 CommandRegistry.Instance.LocateCommands();
-                if (!File.Exists("Inventory.blob"))
+                if (!File.Exists("BotData/Inventory.blob"))
                 {
                     BotSession.Instance.grid.Inventory.RequestFolderContents(BotSession.Instance.grid.Inventory.Store.RootFolder.OwnerID, BotSession.Instance.grid.Inventory.Store.Owner, true, true, InventorySortOrder.SystemFoldersToTop);
 
@@ -335,7 +335,7 @@ namespace Bot
 
                 }
                 else
-                    BotSession.Instance.grid.Inventory.Store.RestoreFromDisk("Inventory.blob");
+                    BotSession.Instance.grid.Inventory.Store.RestoreFromDisk("BotData/Inventory.blob");
 
 
                 int iLastInvLength = 0;
@@ -344,7 +344,7 @@ namespace Bot
 
                     if(iLastInvLength != BotSession.Instance.grid.Inventory.Store.Items.Count)
                     {
-                        BotSession.Instance.grid.Inventory.Store.SaveToDisk("Inventory.blob");
+                        BotSession.Instance.grid.Inventory.Store.SaveToDisk("BotData/Inventory.blob");
                         iLastInvLength = BotSession.Instance.grid.Inventory.Store.Items.Count;
                     }
                     string consoleCmd = "N/A";
