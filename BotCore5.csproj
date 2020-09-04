@@ -16,9 +16,9 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\..\LibZNI\LibZNI.csproj" />
     <ProjectReference Include="..\libremetaverse\LibreMetaverse.StructuredData\LibreMetaverse.StructuredData.csproj" />
     <ProjectReference Include="..\libremetaverse\LibreMetaverseTypes\LibreMetaverse.Types.csproj" />
     <ProjectReference Include="..\libremetaverse\LibreMetaverse\LibreMetaverse.csproj" />
-    <ProjectReference Include="..\LibZNI\LibZNI.csproj" />
   </ItemGroup>
 </Project>
