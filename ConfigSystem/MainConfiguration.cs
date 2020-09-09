@@ -50,6 +50,8 @@ namespace Bot
         public string last { get; set; } = "";
         public string password { get; set; } = "";
 
+        public string SecretNewVerCode { get; set; } = "configure_me";
+
         //public License LicenseKey { get; set; }
         public string ActivationCode { get; set; } = "";
 

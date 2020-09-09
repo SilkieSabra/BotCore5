@@ -12,16 +12,27 @@ namespace Bot.WebHookServer
         [WebhookAttribs("/NewVersionAvailable", HTTPMethod = "POST")]
         public WebhookRegistry.HTTPResponseData a_new_version_is_available(List<string> args, string body, string method, NameValueCollection headers)
         {
-            WebhookRegistry.HTTPResponseData hrd = new WebhookRegistry.HTTPResponseData();
-            hrd.ReplyString = "OK";
-            hrd.ReturnContentType = "text/plain";
-            hrd.Status = 200;
+            if(MainConfiguration.Instance.SecretNewVerCode == body)
+            {
 
-            BaseCommands.MH(Destinations.DEST_LOCAL, UUID.Zero, "Alert: A new version is available. Restart required");
+                WebhookRegistry.HTTPResponseData hrd = new WebhookRegistry.HTTPResponseData();
+                hrd.ReplyString = "OK";
+                hrd.ReturnContentType = "text/plain";
+                hrd.Status = 200;
 
-            BotSession.Instance.EnqueueExit = true;
+                BaseCommands.MH(Destinations.DEST_LOCAL, UUID.Zero, "Alert: A new version is available. Restart required");
 
-            return hrd;
+                BotSession.Instance.EnqueueExit = true;
+
+                return hrd;
+            } else
+            {
+                WebhookRegistry.HTTPResponseData hrd = new WebhookRegistry.HTTPResponseData();
+                hrd.ReplyString = "Not authorized";
+                hrd.ReturnContentType = "text/plain";
+                hrd.Status = 500;
+                return hrd;
+            }
         }
     }
 }

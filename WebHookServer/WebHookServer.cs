@@ -63,7 +63,7 @@ namespace Bot.WebHookServer
                 if (MainConfiguration.Instance.UseSSL)
                 {
 
-                    X509Certificate cert = new X509Certificate2(MainConfiguration.Instance.SSLCertificatePFX, MainConfiguration.Instance.SSLCertificatePWD);
+                    X509Certificate cert = new X509Certificate2("BotData/"+MainConfiguration.Instance.SSLCertificatePFX, MainConfiguration.Instance.SSLCertificatePWD);
 
                     Type hepmType = Type.GetType("System.Net.HttpEndPointManager, System.Net.HttpListener");
                     Type heplType = Type.GetType("System.Net.HttpEndPointListener, System.Net.HttpListener");
