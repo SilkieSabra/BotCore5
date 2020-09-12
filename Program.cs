@@ -334,8 +334,8 @@ namespace Bot
 
 
                 }
-                else
-                    BotSession.Instance.grid.Inventory.Store.RestoreFromDisk("BotData/Inventory.blob");
+                //else
+                    //BotSession.Instance.grid.Inventory.Store.RestoreFromDisk("BotData/Inventory.blob");
 
 
                 int iLastInvLength = 0;
@@ -344,8 +344,8 @@ namespace Bot
 
                     if(iLastInvLength != BotSession.Instance.grid.Inventory.Store.Items.Count)
                     {
-                        BotSession.Instance.grid.Inventory.Store.SaveToDisk("BotData/Inventory.blob");
-                        iLastInvLength = BotSession.Instance.grid.Inventory.Store.Items.Count;
+                        //BotSession.Instance.grid.Inventory.Store.SaveToDisk("BotData/Inventory.blob");
+                        //iLastInvLength = BotSession.Instance.grid.Inventory.Store.Items.Count;
                     }
                     string consoleCmd = "N/A";
                     try
@@ -846,8 +846,6 @@ namespace Bot
         private static void CacheGroupRoles(object sender, GroupRolesDataReplyEventArgs e)
         {
             //MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "[debug] role_reply");
-            if (!Directory.Exists("zGroupCache")) Directory.CreateDirectory("zGroupCache"); // this should be purged at every bot restart!!!
-
             //MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "[debug] generating groupcache file");
             zGroupCaches newCache = new zGroupCaches();
             zGroupCaches.GroupMemoryData gmd = new zGroupCaches.GroupMemoryData();
@@ -865,7 +863,6 @@ namespace Bot
             newCache.GroupID = e.GroupID;
             newCache.Save(e.GroupID.ToString());
             RoleReply.Set();
-            FileInfo fi = new FileInfo("GroupCache/" + e.GroupID.ToString() + ".json");
 
             //MHE(MessageHandler.Destinations.DEST_LOCAL, UUID.Zero, "[debug] Roles for secondlife:///app/group/" + e.GroupID.ToString() + "/about have been saved to: GroupCache/" + e.GroupID.ToString() + ".bdf\nFileSize: "+fi.Length.ToString(), 55);
 
