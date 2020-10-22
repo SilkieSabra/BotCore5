@@ -19,7 +19,6 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\LibZNIcpp\LibZNIcpp.vcxproj" />
     <ProjectReference Include="..\..\LibZNI\LibZNI.csproj" />
     <ProjectReference Include="..\libremetaverse\LibreMetaverse.StructuredData\LibreMetaverse.StructuredData.csproj" />
     <ProjectReference Include="..\libremetaverse\LibreMetaverseTypes\LibreMetaverse.Types.csproj" />

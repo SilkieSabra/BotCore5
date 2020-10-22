@@ -335,8 +335,9 @@ namespace Bot
 
                 }
                 //else
-                    //BotSession.Instance.grid.Inventory.Store.RestoreFromDisk("BotData/Inventory.blob");
+                //BotSession.Instance.grid.Inventory.Store.RestoreFromDisk("BotData/Inventory.blob");
 
+                File.WriteAllText("BotData/Required.SVC", MainConfiguration.Instance.first + "." + MainConfiguration.Instance.last);
 
                 int iLastInvLength = 0;
                 while (g_iIsRunning)
