@@ -31,7 +31,7 @@ namespace Bot.WebHookServer
             StreamReader SR = new StreamReader(body, CTX.Request.ContentEncoding);
             string Response = SR.ReadToEnd();
 
-            if (!Directory.Exists("request_log")) Directory.CreateDirectory("request_log");
+            if (!Directory.Exists("BotData/request_log")) Directory.CreateDirectory("BotData/request_log");
 
 
             string RequestPath = CTX.Request.RawUrl;
@@ -45,7 +45,7 @@ namespace Bot.WebHookServer
             CustomReplyStr = reply.ReplyString;
             byte[] buffer = Encoding.UTF8.GetBytes("\n" + CustomReplyStr);
             CTX.Response.ContentLength64 = buffer.Length;
-            CTX.Response.AddHeader("Server", "1.6");
+            CTX.Response.AddHeader("Server", "1.7");
             CTX.Response.StatusCode = reply.Status;
             if (reply.ReturnContentType != "" && reply.ReturnContentType != null)
             {

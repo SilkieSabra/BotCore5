@@ -14,10 +14,12 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Terminal.Gui" Version="0.90.3" />
   </ItemGroup>
 
 
   <ItemGroup>
+    <ProjectReference Include="..\..\LibZNIcpp\LibZNIcpp.vcxproj" />
     <ProjectReference Include="..\..\LibZNI\LibZNI.csproj" />
     <ProjectReference Include="..\libremetaverse\LibreMetaverse.StructuredData\LibreMetaverse.StructuredData.csproj" />
     <ProjectReference Include="..\libremetaverse\LibreMetaverseTypes\LibreMetaverse.Types.csproj" />

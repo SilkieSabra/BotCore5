@@ -19,12 +19,15 @@ using System.Net;
 using Newtonsoft.Json;
 using System.Security.Cryptography.X509Certificates;
 using System.Reflection;
+using System.Net.Sockets;
+using LibZNI;
 
 namespace Bot.WebHookServer
 {
     class GitServer : IProgram
     {
         public HttpListener listener;
+        //public Socket skt;
         public string ProgramName
         {
             get { return "GitServer"; }
@@ -32,7 +35,7 @@ namespace Bot.WebHookServer
 
         public float ProgramVersion
         {
-            get { return 1.7f; }
+            get { return 1.8f; }
         }
 
         public void getTick()
@@ -63,14 +66,19 @@ namespace Bot.WebHookServer
                 if (MainConfiguration.Instance.UseSSL)
                 {
 
-                    X509Certificate cert = new X509Certificate2("BotData/"+MainConfiguration.Instance.SSLCertificatePFX, MainConfiguration.Instance.SSLCertificatePWD);
+                    /*
+                     * Removed because SSL is apparently windows only, and this implementation is not supported on windows... Use of netsh is pretty much required
+                     */
+                    /*
+                    X509Certificate cert = new X509Certificate2("BotData/" + MainConfiguration.Instance.SSLCertificatePFX, MainConfiguration.Instance.SSLCertificatePWD);
+
 
                     Type hepmType = Type.GetType("System.Net.HttpEndPointManager, System.Net.HttpListener");
                     Type heplType = Type.GetType("System.Net.HttpEndPointListener, System.Net.HttpListener");
                     MethodInfo getEPListener = hepmType.GetMethod("GetEPListener", BindingFlags.Static | BindingFlags.NonPublic);
                     FieldInfo heplCert = heplType.GetField("_cert", BindingFlags.NonPublic | BindingFlags.Instance);
                     object epl = getEPListener.Invoke(null, new object[] { "+", MainConfiguration.Instance.WebServerPort, listener, true });
-                    heplCert.SetValue(epl, cert);
+                    heplCert.SetValue(epl, cert);*/
                     listener.Prefixes.Add($"https://*:{MainConfiguration.Instance.WebServerPort}/");
                 }
                 else
@@ -91,11 +99,13 @@ namespace Bot.WebHookServer
                 //MessageFactory.Post(Destinations.DEST_LOCAL, "Error: Program could not escalate to Admin Privileges. WebHook engine not running\n\n" + e.Message + "\n" + e.StackTrace, UUID.Zero);
                 
             }
+            
         }
 
         private void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
             listener.Stop();
+            //skt.Close();
         }
     }
 }
