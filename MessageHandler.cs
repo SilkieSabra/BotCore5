@@ -193,7 +193,7 @@ namespace Bot
 
         public static void Post(Destinations dest, string Msg, UUID destID, int chn = 0,string ServerName="MAP_NOT_KNOWN", string ChannelName="MAP_NOT_KNOWN",DiscordMiscDataPacket packet=null)
         {
-
+            Msg = Msg + " ";
             Message m = null;
 
             switch (dest)
