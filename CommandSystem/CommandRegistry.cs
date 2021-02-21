@@ -109,7 +109,7 @@ namespace Bot.CommandSystem
                                                 if (Cmds.ContainsKey(CG.Command) == false)
                                                 {
                                                     Log.info(true, "DISCOVER: " + CG.Command);
-                                                    Cmds.Add(CG.Command, CG);
+                                                    Cmds.Add(CG.Command.ToLower(), CG);
                                                 }
                                             }
                                         }
@@ -199,9 +199,9 @@ namespace Bot.CommandSystem
             string[] cmdStruct = cmdString.Split(' ');
             string commandLabel = cmdStruct[0];
 
-            if (Cmds.ContainsKey(commandLabel))
+            if (Cmds.ContainsKey(commandLabel.ToLower()))
             {
-                CommandGroup cg = Cmds[commandLabel];
+                CommandGroup cg = Cmds[commandLabel.ToLower()];
                 if(level >= cg.minLevel)
                 {
                     Destinations dst = cg.CommandSource;

@@ -12,6 +12,10 @@ namespace Bot.NonCommands
     {
         public static void Dispatch(string request, UUID agentKey, string agentName, Destinations sourceLoc, UUID originator)
         {
+            if (MainConfiguration.Instance.IgnoreGroups.Contains(originator))
+            {
+                return;
+            }
 
             foreach(Assembly a in AppDomain.CurrentDomain.GetAssemblies())
             {

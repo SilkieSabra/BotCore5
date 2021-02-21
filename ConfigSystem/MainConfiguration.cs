@@ -81,6 +81,12 @@ namespace Bot
 
         public List<string> DisabledCommands { get; set; } = new List<string>();
 
+
+        /// <summary>
+        /// This is a list of groups that will be ignored by the Bot's NonCommand system. Meaning, no chat log, and no auto responses. Bot Commands will work as normal.
+        /// </summary>
+        public List<UUID> IgnoreGroups { get; set; } = new List<UUID>();
+
         public bool Authed(string GHLogin)
         {
             if (AuthedGithubUsers.Contains(GHLogin)) return true;
