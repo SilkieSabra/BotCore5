@@ -106,7 +106,7 @@ namespace Bot.CommandSystem
                                                 CommandGroup CG = Command[ix];
                                                 CG.AssignedMethod = MI;
 
-                                                if (Cmds.ContainsKey(CG.Command) == false)
+                                                if (Cmds.ContainsKey(CG.Command.ToLower()) == false)
                                                 {
                                                     Log.info(true, "DISCOVER: " + CG.Command);
                                                     Cmds.Add(CG.Command.ToLower(), CG);
