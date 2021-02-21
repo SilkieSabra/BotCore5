@@ -45,7 +45,7 @@ namespace Bot.WebHookServer
             CustomReplyStr = reply.ReplyString;
             byte[] buffer = Encoding.UTF8.GetBytes("\n" + CustomReplyStr);
             CTX.Response.ContentLength64 = buffer.Length;
-            CTX.Response.AddHeader("Server", "1.7");
+            CTX.Response.AddHeader("Server", "1.8");
             CTX.Response.StatusCode = reply.Status;
             if (reply.ReturnContentType != "" && reply.ReturnContentType != null)
             {
